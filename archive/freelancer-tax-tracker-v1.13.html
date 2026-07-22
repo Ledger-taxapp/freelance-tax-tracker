@@ -1,0 +1,1712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="theme-color" content="#1C2B33" />
+<title>Ledger — freelance tax tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --paper: #FAF7F0;
+    --paper-raised: #FFFFFF;
+    --ink: #1C2B33;
+    --ink-soft: #5B6B72;
+    --line: #E3DFD3;
+    --income: #2F6B4F;
+    --income-bg: #E7F0EA;
+    --expense: #A6532B;
+    --expense-bg: #F5E9E0;
+    --warn: #92680B;
+    --warn-bg: #F3ECD6;
+    --mileage: #375E7D;
+    --mileage-bg: #E6ECF1;
+    --payment: #5B4B8A;
+    --payment-bg: #EDE9F5;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 6rem;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 28px;
+    margin: 0 0 2px;
+    letter-spacing: -0.01em;
+  }
+  .sub {
+    color: var(--ink-soft);
+    font-size: 14px;
+    margin: 0 0 1rem;
+  }
+  .disclaimer {
+    background: var(--warn-bg);
+    border: 1px solid #E4D8A8;
+    color: var(--warn);
+    font-size: 12.5px;
+    padding: 9px 12px;
+    border-radius: 8px;
+    margin-bottom: 1.75rem;
+    line-height: 1.4;
+  }
+  .field-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .field { flex: 1; min-width: 140px; }
+  label { display: block; font-size: 12px; color: var(--ink-soft); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.04em; line-height: 1.3; min-height: 2.6em; }
+  select, input {
+    width: 100%;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    padding: 9px 10px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--paper-raised);
+    color: var(--ink);
+  }
+  select:focus, input:focus { outline: 2px solid var(--ink); outline-offset: 1px; }
+
+  .card {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+  .card h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 1rem;
+  }
+  .card-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1rem; }
+  .card-header h2 { margin: 0; }
+
+  .btn-text {
+    background: none; border: none; color: var(--ink-soft); font-size: 12px;
+    cursor: pointer; text-decoration: underline; padding: 0; font-family: inherit;
+  }
+  .btn-text:hover { color: var(--ink); }
+  .btn-text.danger { color: var(--expense); }
+
+  .entry-form { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; }
+  .entry-form .field { min-width: 110px; }
+  .entry-form button {
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    border-radius: 6px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    height: 38px;
+  }
+  .entry-form button:active { transform: scale(0.98); }
+  .type-toggle { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .type-toggle button {
+    min-width: 0;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    border-radius: 6px;
+    padding: 9px 4px;
+    font-size: 13px;
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .type-toggle button.active.income { background: var(--income-bg); color: var(--income); border-color: var(--income); }
+  .type-toggle button.active.expense { background: var(--expense-bg); color: var(--expense); border-color: var(--expense); }
+  .type-toggle button.active.mileage { background: var(--mileage-bg); color: var(--mileage); border-color: var(--mileage); }
+  .type-toggle button.active.payment { background: var(--payment-bg); color: var(--payment); border-color: var(--payment); }
+
+  .checkbox-row { display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--ink); margin-bottom: 10px; }
+  .checkbox-row input[type="checkbox"] {
+    width: 16px; height: 16px; padding: 0; border: 1px solid var(--line); background: var(--paper-raised); accent-color: var(--ink);
+  }
+  .helper-note { font-size: 12px; color: var(--ink-soft); margin-bottom: 10px; line-height: 1.45; }
+  .warning-note { font-size: 12px; color: var(--warn); margin: -4px 0 10px; line-height: 1.4; }
+
+  .ledger { margin-top: 1.25rem; border-top: 1px solid var(--line); }
+  .ledger-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 6px;
+    margin: 0 -6px;
+    border-bottom: 1px solid var(--line);
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 6px;
+  }
+  .ledger-row:hover { background: var(--paper); }
+  .ledger-row.editing { background: var(--warn-bg); }
+  .ledger-row.confirming { background: var(--expense-bg); }
+  .ledger-left { display: flex; flex-direction: column; gap: 2px; }
+  .ledger-date { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--ink-soft); }
+  .ledger-note { color: var(--ink); }
+  .ledger-tag {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-left: 6px;
+    position: relative;
+    top: -1px;
+  }
+  .ledger-tag.meal { background: var(--expense-bg); color: var(--expense); }
+  .ledger-tag.mileage { background: var(--mileage-bg); color: var(--mileage); }
+  .ledger-amt { font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 500; }
+  .ledger-amt.income { color: var(--income); }
+  .ledger-amt.expense { color: var(--expense); }
+  .ledger-amt.payment { color: var(--payment); }
+  .ledger-del {
+    background: none; border: none; color: var(--ink-soft); cursor: pointer; font-size: 16px; margin-left: 10px; line-height: 1;
+  }
+  .ledger-confirm { display: flex; align-items: center; gap: 10px; font-size: 12.5px; }
+  .empty { color: var(--ink-soft); font-size: 13px; padding: 1rem 0; text-align: center; }
+
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .stat { background: var(--paper); border-radius: 8px; padding: 0.9rem; min-width: 0; overflow: hidden; }
+  .stat-label { font-size: 12px; color: var(--ink-soft); margin-bottom: 4px; }
+  .stat-value { font-family: 'IBM Plex Mono', monospace; font-size: 20px; font-weight: 500; overflow-wrap: break-word; }
+  .stat.highlight { background: var(--warn-bg); }
+  .stat.highlight .stat-value { color: var(--warn); }
+  .stat.muted .stat-value { color: var(--ink-soft); font-size: 16px; }
+  .stat-grid.cols-3 .stat-value { font-size: 16px; white-space: nowrap; }
+  @media (max-width: 480px) {
+    .stat-grid.cols-3 { grid-template-columns: 1fr 1fr; }
+  }
+
+  .due-row { display: flex; justify-content: space-between; gap: 8px; margin-top: 0.5rem; }
+  .due {
+    flex: 1; text-align: center; padding: 10px 4px; border-radius: 8px; border: 1px solid var(--line); background: var(--paper);
+  }
+  .due.next { border-color: var(--warn); background: var(--warn-bg); }
+  .due-label { font-size: 11px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.03em; }
+  .due-date { font-family: 'IBM Plex Mono', monospace; font-size: 13px; margin-top: 3px; }
+  .status { font-size: 12px; color: var(--ink-soft); margin-top: 1rem; }
+
+  details.card summary {
+    font-family: 'Fraunces', serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+  }
+  details.card summary::-webkit-details-marker { display: none; }
+  details.card summary::after { content: '  ›'; color: var(--ink-soft); }
+  details.card[open] summary::after { content: '  ⌄'; }
+  .methodology-body { margin-top: 0.9rem; font-size: 13px; color: var(--ink-soft); line-height: 1.6; }
+  .methodology-body ul { margin: 0.4rem 0 0.8rem; padding-left: 1.1rem; }
+  .methodology-body li { margin-bottom: 0.35rem; }
+  .year-note { font-size: 12px; color: var(--warn); margin-bottom: 0.75rem; }
+
+  .info-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 15px; height: 15px; border-radius: 50%;
+    background: var(--line); color: var(--ink-soft);
+    font-size: 10px; font-weight: 600; border: none; cursor: pointer;
+    margin-left: 5px; line-height: 1; padding: 0; position: relative; top: -1px;
+    font-family: 'Inter', sans-serif; flex-shrink: 0;
+  }
+  .info-btn:hover { background: var(--ink-soft); color: var(--paper-raised); }
+  .stat-label { display: flex; align-items: center; }
+
+  .glossary-body { margin-top: 0.9rem; }
+  .term { padding: 11px 8px; margin: 0 -8px; border-bottom: 1px solid var(--line); border-radius: 6px; transition: background 0.7s ease; }
+  .term:last-child { border-bottom: none; }
+  .term summary {
+    font-family: 'Fraunces', serif; font-size: 14px; font-weight: 600; color: var(--ink);
+    cursor: pointer; list-style: none;
+  }
+  .term summary::-webkit-details-marker { display: none; }
+  .term summary::after { content: '  ›'; color: var(--ink-soft); font-family: 'Inter', sans-serif; font-weight: 400; }
+  .term[open] summary::after { content: '  ⌄'; }
+  .term p { font-size: 13px; color: var(--ink-soft); line-height: 1.55; margin: 6px 0 0; }
+  .term.highlight { background: var(--warn-bg); }
+
+  .term-tooltip {
+    position: absolute;
+    width: 250px;
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 12.5px;
+    line-height: 1.45;
+    box-shadow: 0 8px 24px rgba(28,43,51,0.25);
+    z-index: 60;
+    display: none;
+  }
+  .term-tooltip.visible { display: block; }
+  .term-tooltip-title { font-family: 'Fraunces', serif; font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+  .term-tooltip-summary { color: #D7DEE2; margin-bottom: 8px; }
+  .term-tooltip-more {
+    background: none; border: none; color: var(--paper); font-size: 12px;
+    text-decoration: underline; cursor: pointer; padding: 0; font-family: inherit;
+  }
+
+  .chart-tooltip {
+    position: absolute;
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 7px;
+    padding: 7px 10px;
+    font-size: 12px;
+    line-height: 1.35;
+    box-shadow: 0 6px 18px rgba(28,43,51,0.22);
+    z-index: 60;
+    display: none;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .chart-tooltip.visible { display: block; }
+  .chart-tooltip-label { color: #D7DEE2; font-size: 10.5px; margin-bottom: 1px; }
+  .chart-tooltip-value { font-family: 'IBM Plex Mono', monospace; font-weight: 500; }
+
+  .chart-shape { cursor: pointer; }
+  .month-bar {
+    transform-box: fill-box;
+    transform-origin: bottom;
+    transition: transform 0.15s ease, filter 0.15s ease;
+  }
+  .month-bar.chart-shape-active, .month-bar:hover { transform: scaleY(1.06); filter: brightness(1.1); }
+  .donut-segment { transition: stroke-width 0.15s ease, filter 0.15s ease; }
+  .donut-segment.chart-shape-active, .donut-segment:hover { stroke-width: 22; filter: brightness(1.08); }
+  .progress-track.chart-shape { transition: transform 0.15s ease; }
+  .progress-track.chart-shape-active, .progress-track.chart-shape:hover { transform: scaleY(1.12); }
+
+  /* Bottom navigation */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    background: var(--paper-raised);
+    border-top: 1px solid var(--line);
+    padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px));
+    z-index: 40;
+  }
+  .nav-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    background: none;
+    border: none;
+    color: var(--ink-soft);
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    padding: 6px 26px;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  .nav-btn.active { color: var(--ink); background: var(--paper); }
+
+  /* Dashboard widgets */
+  .progress-track { background: var(--paper); border-radius: 999px; height: 30px; overflow: hidden; margin: 10px 0 8px; position: relative; }
+  .progress-fill { background: var(--income); height: 100%; border-radius: 999px; transition: width 0.4s ease; }
+  .progress-fill.warn { background: var(--warn); }
+  .progress-remaining-label {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    font-size: 11.5px; color: var(--ink-soft); font-family: 'IBM Plex Mono', monospace; font-weight: 500;
+    pointer-events: none; white-space: nowrap;
+  }
+  .progress-summary { font-size: 13px; color: var(--ink-soft); margin: 0; }
+  .progress-summary strong { color: var(--ink); font-weight: 500; }
+
+  .chart-legend { display: flex; gap: 16px; margin-top: 10px; font-size: 12px; color: var(--ink-soft); flex-wrap: wrap; }
+  .chart-legend-item { display: flex; align-items: center; gap: 5px; }
+  .chart-legend-swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; flex-shrink: 0; }
+
+  .breakdown-row { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+  .dash-empty { color: var(--ink-soft); font-size: 13px; text-align: center; padding: 1.5rem 0; }
+  .stat-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 id="page-title">Ledger</h1>
+  <p class="sub" id="page-sub">A running estimate of what you owe, updated every time you log something.</p>
+  <div class="disclaimer">Estimate only, for planning purposes — not tax advice. Verify with a CPA or tax professional before filing or sending payments.</div>
+
+  <div id="view-ledger">
+  <div class="card">
+    <h2>Your details</h2>
+    <div class="field-row" style="margin-bottom: 10px;">
+      <div class="field">
+        <label for="status">Filing status</label>
+        <select id="status">
+          <option value="single">Single</option>
+          <option value="mfj">Married filing jointly</option>
+          <option value="hoh">Head of household</option>
+        </select>
+      </div>
+    </div>
+    <div class="field-row" style="margin-bottom: 10px;">
+      <div class="field">
+        <label for="year-select">Tax year</label>
+        <select id="year-select"></select>
+      </div>
+      <div class="field">
+        <label for="w2-wages" id="w2-wages-label" style="display:flex; align-items:center;">W-2 wages this year<button class="info-btn" type="button" data-term="w2-wages">?</button></label>
+        <input type="number" id="w2-wages" min="0" step="100" placeholder="0" />
+      </div>
+    </div>
+    <div class="field-row" style="margin-bottom: 0;">
+      <div class="field" id="spouse-w2-field" style="display:none;">
+        <label for="w2-wages-spouse" style="display:flex; align-items:center;">Spouse's W-2 wages<button class="info-btn" type="button" data-term="w2-wages-spouse">?</button></label>
+        <input type="number" id="w2-wages-spouse" min="0" step="100" placeholder="0" />
+      </div>
+    </div>
+    <div id="year-note" class="year-note" style="display:none; margin-top: 0.9rem;"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2>Log an entry</h2>
+      <button class="btn-text" id="export-csv-btn" type="button">Export CSV</button>
+    </div>
+    <div class="field-row" style="margin-bottom: 10px;">
+      <div class="field type-toggle">
+        <button id="btn-income" class="active income" type="button">Income</button>
+        <button id="btn-expense" class="expense" type="button">Expense</button>
+        <button id="btn-mileage" class="mileage" type="button">Mileage</button>
+        <button id="btn-payment" class="payment" type="button">Payment</button>
+      </div>
+    </div>
+    <div class="entry-form">
+      <div class="field">
+        <label for="entry-date">Date</label>
+        <input type="date" id="entry-date" />
+      </div>
+      <div class="field">
+        <label for="entry-amount" id="entry-amount-label">Amount</label>
+        <input type="number" id="entry-amount" min="0" step="1" placeholder="0" />
+      </div>
+      <div class="field" style="flex: 2; min-width: 160px;">
+        <label for="entry-note">Note</label>
+        <input type="text" id="entry-note" placeholder="Client, project, expense..." />
+      </div>
+      <button id="add-btn" type="button">Add</button>
+      <button class="btn-text" id="cancel-edit-btn" type="button" style="display:none; height:38px;">Cancel</button>
+    </div>
+    <div class="checkbox-row" id="meal-row" style="display:none;">
+      <input type="checkbox" id="entry-meal" />
+      <label for="entry-meal" style="margin:0; text-transform:none; letter-spacing:normal; color:var(--ink);">Meal — only 50% is deductible</label>
+    </div>
+    <div class="helper-note" id="mileage-row" style="display:none;"><button class="info-btn" type="button" data-term="mileage-rate">?</button><span id="mileage-helper-text"></span></div>
+    <div class="warning-note" id="entry-warning" style="display:none;"></div>
+    <div id="ledger" class="ledger"></div>
+  </div>
+
+  <div class="card">
+    <h2>What you owe</h2>
+    <p class="helper-note" id="tax-params-note"></p>
+    <div class="stat-grid">
+      <div class="stat">
+        <div class="stat-label">QBI deduction<button class="info-btn" type="button" data-term="qbi">?</button></div>
+        <div class="stat-value" id="qbi-deduction">$0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Self-employment tax<button class="info-btn" type="button" data-term="se-tax">?</button></div>
+        <div class="stat-value" id="se-tax">$0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Additional Medicare tax<button class="info-btn" type="button" data-term="addl-medicare">?</button></div>
+        <div class="stat-value" id="addl-medicare">$0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Federal income tax</div>
+        <div class="stat-value" id="fed-tax">$0</div>
+      </div>
+      <div class="stat" style="grid-column: span 2;">
+        <div class="stat-label">Total projected tax</div>
+        <div class="stat-value" id="total-tax">$0</div>
+      </div>
+    </div>
+    <p class="helper-note" id="loss-note" style="display:none; margin-top: 0.9rem; margin-bottom: 0;"></p>
+  </div>
+
+  <div class="card">
+    <h2>Payments &amp; safe harbor</h2>
+    <p class="helper-note">Enter last year's numbers to see the minimum you need to pay this year to avoid an underpayment penalty — often lower than your full projected tax.</p>
+    <div class="field-row">
+      <div class="field">
+        <label for="prior-tax">Prior year total tax</label>
+        <input type="number" id="prior-tax" min="0" step="100" placeholder="0" />
+      </div>
+      <div class="field">
+        <label for="prior-agi">Prior year AGI</label>
+        <input type="number" id="prior-agi" min="0" step="100" placeholder="0" />
+      </div>
+      <div class="field">
+        <label for="w2-withholding" style="display:flex; align-items:center;">W-2 withholding this year<button class="info-btn" type="button" data-term="w2-withholding">?</button></label>
+        <input type="number" id="w2-withholding" min="0" step="100" placeholder="0" />
+      </div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat muted">
+        <div class="stat-label">Safe harbor target<button class="info-btn" type="button" data-term="safe-harbor">?</button></div>
+        <div class="stat-value" id="safe-harbor">—</div>
+      </div>
+      <div class="stat muted">
+        <div class="stat-label">Already covered<button class="info-btn" type="button" data-term="already-covered">?</button></div>
+        <div class="stat-value" id="paid-so-far">$0</div>
+      </div>
+      <div class="stat highlight" style="grid-column: span 2;">
+        <div class="stat-label"><span id="next-payment-label">Suggested next payment</span><button class="info-btn" type="button" data-term="quarterly">?</button></div>
+        <div class="stat-value" id="next-payment">$0</div>
+      </div>
+    </div>
+    <p class="helper-note" id="overpaid-note" style="display:none; margin-top: 0.9rem; margin-bottom: 0;"></p>
+  </div>
+
+  <div class="card">
+    <h2 id="due-dates-title">2026 due dates</h2>
+    <p class="helper-note" id="due-dates-note" style="display:none;"></p>
+    <div class="due-row" id="due-dates"></div>
+  </div>
+
+
+  <details class="card" id="methodology">
+    <summary>How this is calculated</summary>
+    <div class="methodology-body" id="methodology-body"></div>
+  </details>
+  </div>
+
+  <div id="view-dashboard" style="display:none;">
+    <div class="card">
+      <h2 id="dash-snapshot-title">Your year so far</h2>
+      <div id="dash-snapshot"></div>
+    </div>
+
+    <div class="card">
+      <h2>Payment progress</h2>
+      <div id="dash-progress"></div>
+    </div>
+
+    <div class="card">
+      <h2>Income vs. expenses by month</h2>
+      <div id="dash-monthly"></div>
+    </div>
+
+    <div class="card">
+      <h2>Where your tax bill comes from</h2>
+      <div id="dash-breakdown"></div>
+    </div>
+
+    <div class="card">
+      <h2>Quick stats</h2>
+      <div id="dash-quickstats"></div>
+    </div>
+  </div>
+
+  <div id="view-terms" style="display:none;">
+    <div class="card">
+      <h2>Tax terms, explained</h2>
+      <div class="glossary-body" id="glossary-body">
+      <p class="helper-note" style="margin-top: 0;">New to being your own boss? Or a seasoned pro double-checking a detail? Either way, here's what these terms actually mean — plain and simple.</p>
+
+      <details class="term" id="term-se-tax">
+        <summary>Self-employment tax</summary>
+        <p>When you work for an employer, they automatically cover half of your Social Security and Medicare taxes before you ever see your paycheck. When you work for yourself, there's no employer to split that with — so self-employment tax simply combines both halves into one tax you pay directly. It isn't an extra penalty for being your own boss; it's the same tax everyone pays, just landing entirely on your side.</p>
+      </details>
+
+      <details class="term" id="term-qbi">
+        <summary>QBI deduction (Qualified Business Income)</summary>
+        <p>This is one of the best parts of being self-employed, and a lot of people don't realize it exists. It lets you deduct 20% of your net business profit before your federal income tax is calculated — meaning roughly a fifth of what you earned from your work isn't taxed at all. You don't need to do anything special to claim it; this tool applies it automatically. It does start to shrink at higher income — for 2026, it tapers off between $201,775–$276,775 of taxable income (single or head of household) or $403,550–$553,550 (married filing jointly), and this tool follows that same taper.</p>
+      </details>
+
+      <details class="term" id="term-fed-tax">
+        <summary>Federal income tax</summary>
+        <p>This is the tax on your income after your deductions are subtracted, calculated using tax brackets — different slices of your income are taxed at different rates as you earn more, not your whole income at one flat rate. So earning more never means your entire income suddenly gets taxed higher; it just means the next dollar you earn is taxed at a slightly higher rate than the one before it.</p>
+      </details>
+
+      <details class="term" id="term-addl-medicare">
+        <summary>Additional Medicare tax</summary>
+        <p>This only kicks in once income climbs fairly high — above $200,000 for most filers. It adds an extra 0.9% on earnings above that line, on top of the regular Medicare tax. If you're just getting started, there's a good chance this will show as $0 for you, and that's completely normal.</p>
+      </details>
+
+      <details class="term" id="term-safe-harbor">
+        <summary>Safe harbor</summary>
+        <p>The IRS wants your taxes paid gradually throughout the year, not all at once in April. Safe harbor is the rule that protects you from a penalty as long as you pay at least a certain amount along the way — usually the lower of either 100% of what you owed last year, or 90% of what you'll owe this year. If you're not sure yet, it's completely fine to leave this blank and come back to it later.</p>
+      </details>
+
+      <details class="term" id="term-quarterly">
+        <summary>Quarterly estimated payments</summary>
+        <p>Freelance income doesn't have tax withheld automatically the way a paycheck does, so the IRS asks self-employed people to send in payments four times a year instead of one lump sum. This tool spreads whatever you still owe across your remaining due dates for the year, so each payment feels more manageable than one big number in April.</p>
+      </details>
+
+      <details class="term" id="term-standard-deduction">
+        <summary>Standard deduction</summary>
+        <p>This is a flat amount the IRS lets everyone subtract from their taxable income before calculating tax — no receipts or paperwork needed. It changes based on your filing status and is already built into every number this tool shows you.</p>
+      </details>
+
+      <details class="term" id="term-net-vs-gross">
+        <summary>Net vs. gross income</summary>
+        <p>Gross income is everything you brought in before any expenses. Net income is what's left after subtracting your business expenses — and it's the number that actually gets taxed. Two freelancers earning the same gross income can owe very different amounts, simply because one tracked more of their deductible expenses. It's a good reason to log even the small ones.</p>
+      </details>
+
+      <details class="term" id="term-mileage-rate">
+        <summary>Standard mileage rate</summary>
+        <p>Instead of tracking the exact cost of gas, maintenance, and wear on your vehicle, the IRS lets you use one simple rate per business mile driven. Multiply your miles by that rate, and that's your deduction. The rate can change mid-year — it did in 2026 — so this tool automatically applies whichever rate matches the date you drove.</p>
+      </details>
+
+      <details class="term" id="term-w2-wages">
+        <summary>W-2 wages</summary>
+        <p>If you also have a W-2 job alongside your freelance work, this matters more than it might seem. Social Security tax is only collected up to a yearly earnings cap, and it's based on your own earnings record — not your household's. Telling this tool about your own W-2 wages means it won't overcharge you on the Social Security portion of your self-employment tax.</p>
+      </details>
+
+      <details class="term" id="term-w2-wages-spouse">
+        <summary>Spouse's W-2 wages</summary>
+        <p>This one only shows up for joint filers, and it plays a different role than your own W-2 wages. Your spouse's earnings don't affect your Social Security cap — that's tracked per person — but they do count toward your household's combined income for federal tax brackets and the Additional Medicare Tax. Keeping the two separate is what lets this tool get both calculations right at once.</p>
+      </details>
+
+      <details class="term" id="term-w2-withholding">
+        <summary>W-2 withholding</summary>
+        <p>Every paycheck from a W-2 job already has federal tax withheld and sent to the IRS automatically — the IRS treats that money as if it were paid evenly across the whole year, no matter when it was actually withheld. This tool counts that withholding toward what you owe, alongside any estimated payments you've logged, so it doesn't ask you to pay twice on income your employer is already covering. You can usually find a running total on your pay stub, or estimate it from your most recent one.</p>
+      </details>
+
+      <details class="term" id="term-already-covered">
+        <summary>Already covered</summary>
+        <p>This adds together two different things: any W-2 withholding you've told this tool about, plus any estimated payments you've logged in the ledger. Together, they're what's already chipping away at your tax bill — the "Suggested next payment" is just what's left after subtracting this from your target.</p>
+      </details>
+
+      <details class="term" id="term-effective-rate">
+        <summary>Effective tax rate</summary>
+        <p>This is your total projected tax divided by your net business income — in other words, roughly what share of what you actually kept ends up going to taxes. It's usually lower than the tax bracket you're in, since brackets only apply to the top slice of your income, not all of it.</p>
+      </details>
+    </div>
+    </div>
+  </div>
+
+  <div class="status" id="status-line"></div>
+
+  <div class="term-tooltip" id="term-tooltip" role="tooltip">
+    <div class="term-tooltip-title" id="term-tooltip-title"></div>
+    <div class="term-tooltip-summary" id="term-tooltip-summary"></div>
+    <button class="term-tooltip-more" id="term-tooltip-more" type="button">View more →</button>
+  </div>
+
+  <div class="chart-tooltip" id="chart-tooltip" role="tooltip">
+    <div class="chart-tooltip-label" id="chart-tooltip-label"></div>
+    <div class="chart-tooltip-value" id="chart-tooltip-value"></div>
+  </div>
+</div>
+
+<nav class="bottom-nav" id="bottom-nav">
+  <button class="nav-btn active" id="nav-ledger" type="button" data-view="ledger">
+    <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14v16l-3.5-2-3.5 2-3.5-2L5 20z"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="16" y2="13"/></svg>
+    <span>Ledger</span>
+  </button>
+  <button class="nav-btn" id="nav-dashboard" type="button" data-view="dashboard">
+    <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="13" width="5" height="8" rx="1"/><rect x="9.5" y="8" width="5" height="13" rx="1"/><rect x="16" y="3" width="5" height="18" rx="1"/></svg>
+    <span>Dashboard</span>
+  </button>
+  <button class="nav-btn" id="nav-terms" type="button" data-view="terms">
+    <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.5 2.5 0 0 1 4.8.9c0 1.7-2.3 1.9-2.3 3.4"/><circle cx="12" cy="16.5" r="0.6" fill="currentColor" stroke="none"/></svg>
+    <span>Terms</span>
+  </button>
+</nav>
+
+<script>
+(function () {
+  var TAX_YEAR_PARAMS = {
+    2026: {
+      stdDeduction: { single: 16100, mfj: 32200, hoh: 24150 },
+      brackets: {
+        single: [[0,12400,0.10],[12400,50400,0.12],[50400,105700,0.22],[105700,201775,0.24],[201775,256225,0.32],[256225,640600,0.35],[640600,Infinity,0.37]],
+        mfj: [[0,24800,0.10],[24800,100800,0.12],[100800,211400,0.22],[211400,403550,0.24],[403550,512450,0.32],[512450,768700,0.35],[768700,Infinity,0.37]],
+        hoh: [[0,17700,0.10],[17700,67450,0.12],[67450,105700,0.22],[105700,201775,0.24],[201775,256200,0.32],[256200,640600,0.35],[640600,Infinity,0.37]]
+      },
+      ssWageBase: 184500,
+      addlMedicareThreshold: { single: 200000, mfj: 250000, hoh: 200000 },
+      qbiPhaseOut: {
+        single: { start: 201775, range: 75000 },
+        hoh: { start: 201775, range: 75000 },
+        mfj: { start: 403550, range: 150000 }
+      },
+      updated: 'Jan 2026'
+    }
+  };
+  var DEFAULT_TAX_YEAR = 2026;
+
+  // IRS optional standard mileage rate (business use), by effective date.
+  // 2026 had a mid-year bump (first since 2022) due to rising gas prices.
+  var MILEAGE_RATES = [
+    { from: '2023-01-01', to: '2023-12-31', rate: 0.655 },
+    { from: '2024-01-01', to: '2024-12-31', rate: 0.67 },
+    { from: '2025-01-01', to: '2025-12-31', rate: 0.70 },
+    { from: '2026-01-01', to: '2026-06-30', rate: 0.725 },
+    { from: '2026-07-01', to: '2026-12-31', rate: 0.76 }
+  ];
+
+  function mileageRateFor(dateStr) {
+    var match = MILEAGE_RATES.find(function (r) { return dateStr >= r.from && dateStr <= r.to; });
+    if (match) return { rate: match.rate, exact: true };
+    var fallbackRate = dateStr < MILEAGE_RATES[0].from ? MILEAGE_RATES[0].rate : MILEAGE_RATES[MILEAGE_RATES.length - 1].rate;
+    return { rate: fallbackRate, exact: false };
+  }
+
+  function paramsForYear(year) {
+    return TAX_YEAR_PARAMS[year] || TAX_YEAR_PARAMS[DEFAULT_TAX_YEAR];
+  }
+
+  var realCurrentYear = new Date().getFullYear();
+
+  var state = {
+    filingStatus: 'single',
+    entryType: 'income',
+    entries: [],
+    w2Wages: '',
+    w2WagesSpouse: '',
+    w2Withholding: '',
+    priorYearTax: '',
+    priorYearAGI: '',
+    selectedYear: realCurrentYear
+  };
+  var STORAGE_KEY = 'tax-tracker-state';
+  var editingId = null;
+  var pendingDeleteId = null;
+  var ledgerExpanded = false;
+
+  var yearSelect = document.getElementById('year-select');
+  var statusEl = document.getElementById('status');
+  var w2El = document.getElementById('w2-wages');
+  var w2LabelEl = document.getElementById('w2-wages-label');
+  var spouseW2FieldEl = document.getElementById('spouse-w2-field');
+  var w2SpouseEl = document.getElementById('w2-wages-spouse');
+  var w2WithholdingEl = document.getElementById('w2-withholding');
+  var priorTaxEl = document.getElementById('prior-tax');
+  var priorAgiEl = document.getElementById('prior-agi');
+  var yearNoteEl = document.getElementById('year-note');
+  var btnIncome = document.getElementById('btn-income');
+  var btnExpense = document.getElementById('btn-expense');
+  var btnMileage = document.getElementById('btn-mileage');
+  var btnPayment = document.getElementById('btn-payment');
+  var dateEl = document.getElementById('entry-date');
+  var amountEl = document.getElementById('entry-amount');
+  var amountLabelEl = document.getElementById('entry-amount-label');
+  var noteEl = document.getElementById('entry-note');
+  var mealRow = document.getElementById('meal-row');
+  var mealCheckbox = document.getElementById('entry-meal');
+  var mileageRow = document.getElementById('mileage-row');
+  var entryWarningEl = document.getElementById('entry-warning');
+  var addBtn = document.getElementById('add-btn');
+  var cancelEditBtn = document.getElementById('cancel-edit-btn');
+  var exportBtn = document.getElementById('export-csv-btn');
+  var ledgerEl = document.getElementById('ledger');
+  var statusLine = document.getElementById('status-line');
+  var lossNoteEl = document.getElementById('loss-note');
+  var taxParamsNoteEl = document.getElementById('tax-params-note');
+  var methodologyBody = document.getElementById('methodology-body');
+  var viewLedgerEl = document.getElementById('view-ledger');
+  var viewDashboardEl = document.getElementById('view-dashboard');
+  var viewTermsEl = document.getElementById('view-terms');
+  var navLedgerBtn = document.getElementById('nav-ledger');
+  var navDashboardBtn = document.getElementById('nav-dashboard');
+  var navTermsBtn = document.getElementById('nav-terms');
+  var pageTitleEl = document.getElementById('page-title');
+  var pageSubEl = document.getElementById('page-sub');
+  var currentView = 'ledger';
+
+  function fmt(n) {
+    return '$' + Math.round(n).toLocaleString('en-US');
+  }
+
+  function todayStr() {
+    var d = new Date();
+    var m = String(d.getMonth() + 1).padStart(2, '0');
+    var day = String(d.getDate()).padStart(2, '0');
+    return d.getFullYear() + '-' + m + '-' + day;
+  }
+
+  function entriesForYear(year) {
+    return state.entries.filter(function (e) { return e.date.slice(0, 4) === String(year); });
+  }
+
+  function dueDatesForYear(year) {
+    return [
+      { label: 'Q1', date: new Date(year, 3, 15) },
+      { label: 'Q2', date: new Date(year, 5, 15) },
+      { label: 'Q3', date: new Date(year, 8, 15) },
+      { label: 'Q4', date: new Date(Number(year) + 1, 0, 15) }
+    ];
+  }
+
+  function remainingQuarterCount(year) {
+    var y = Number(year);
+    if (y < realCurrentYear) return 0;
+    if (y > realCurrentYear) return 4;
+    var now = new Date();
+    return dueDatesForYear(y).filter(function (d) { return d.date >= now; }).length;
+  }
+
+  function calcTotals(year) {
+    var params = paramsForYear(year);
+    var yearEntries = entriesForYear(year);
+    var income = 0, expenses = 0, expensesRaw = 0, paidEstimated = 0;
+    yearEntries.forEach(function (e) {
+      if (e.type === 'income') income += e.amount;
+      else if (e.type === 'expense') { expenses += e.isMeal ? e.amount * 0.5 : e.amount; expensesRaw += e.amount; }
+      else if (e.type === 'payment') paidEstimated += e.amount;
+    });
+
+    var netBusiness = Math.max(0, income - expenses);
+    var netSE = netBusiness * 0.9235;
+    var w2Self = Math.max(0, Number(state.w2Wages) || 0);
+    var w2Spouse = state.filingStatus === 'mfj' ? Math.max(0, Number(state.w2WagesSpouse) || 0) : 0;
+    var w2Combined = w2Self + w2Spouse;
+
+    // Social Security wage-base cap is tracked per individual (your own earnings
+    // record), so only YOUR OWN W-2 wages reduce the room left for SE tax's
+    // Social Security portion — a spouse's income never touches this.
+    var ssRemaining = Math.max(0, params.ssWageBase - w2Self);
+    var ssTaxablePortion = Math.min(netSE, ssRemaining);
+    var seTax = ssTaxablePortion * 0.124 + netSE * 0.029;
+    var seDeduction = seTax / 2;
+
+    // Federal tax brackets and Additional Medicare Tax DO use the full
+    // household income for a joint return, so combined W-2 wages apply here.
+    var qbiBase = Math.max(0, netBusiness - seDeduction);
+    var combinedIncome = w2Combined + netBusiness;
+    var taxableBeforeQBI = Math.max(0, combinedIncome - seDeduction - params.stdDeduction[state.filingStatus]);
+
+    // QBI deduction, with the real 2026 phase-out taper applied: full 20%
+    // below the threshold, straight-line down to $0 across the phase-out
+    // range. This assumes a typical solo freelancer with no W-2 payroll or
+    // significant business property of their own, which is what makes the
+    // wage/property test (the alternative to full phase-out) come out near
+    // zero anyway for most tool users, service business or not.
+    var qbiUncapped = Math.min(qbiBase * 0.20, taxableBeforeQBI * 0.20);
+    var qbiPhase = params.qbiPhaseOut[state.filingStatus];
+    var qbiPhaseOutFraction = 0;
+    if (qbiPhase && taxableBeforeQBI > qbiPhase.start) {
+      qbiPhaseOutFraction = Math.min(1, (taxableBeforeQBI - qbiPhase.start) / qbiPhase.range);
+    }
+    var qbiDeduction = qbiUncapped * (1 - qbiPhaseOutFraction);
+    var taxable = Math.max(0, taxableBeforeQBI - qbiDeduction);
+
+    var fedTax = 0;
+    params.brackets[state.filingStatus].forEach(function (b) {
+      var lo = b[0], hi = b[1], rate = b[2];
+      if (taxable > lo) fedTax += (Math.min(taxable, hi) - lo) * rate;
+    });
+
+    var addlThreshold = params.addlMedicareThreshold[state.filingStatus];
+    var addlMedicareBase = Math.max(0, (w2Combined + netSE) - addlThreshold);
+    var addlMedicareTax = addlMedicareBase * 0.009;
+
+    var total = seTax + fedTax + addlMedicareTax;
+
+    var priorTax = Math.max(0, Number(state.priorYearTax) || 0);
+    var priorAGI = Math.max(0, Number(state.priorYearAGI) || 0);
+    var safeHarborMultiplier = priorAGI > 150000 ? 1.10 : 1.00;
+    var safeHarborTarget = priorTax > 0 ? priorTax * safeHarborMultiplier : null;
+    var target = safeHarborTarget != null ? Math.min(total, safeHarborTarget) : total;
+
+    // W-2 withholding is treated as paid evenly across the year, same as the
+    // IRS treats it — so it counts toward the target right alongside any
+    // estimated payments already logged, instead of being ignored.
+    var w2Withholding = Math.max(0, Number(state.w2Withholding) || 0);
+    var covered = w2Withholding + paidEstimated;
+    var balance = Math.max(0, target - covered);
+    var remainingQuarters = remainingQuarterCount(year);
+    var nextPayment = remainingQuarters > 0 ? balance / remainingQuarters : balance;
+
+    return {
+      income: income, expenses: expenses, expensesRaw: expensesRaw, netBusiness: netBusiness,
+      seTax: seTax, qbiDeduction: qbiDeduction, qbiPhaseOutFraction: qbiPhaseOutFraction, fedTax: fedTax,
+      addlMedicareTax: addlMedicareTax, total: total,
+      w2Withholding: w2Withholding, paidEstimated: paidEstimated, covered: covered,
+      safeHarborTarget: safeHarborTarget, target: target, balance: balance,
+      overpaid: Math.max(0, covered - target),
+      remainingQuarters: remainingQuarters,
+      nextPayment: nextPayment, params: params
+    };
+  }
+
+  function availableYears() {
+    var years = {};
+    years[realCurrentYear] = true;
+    years[realCurrentYear - 1] = true;
+    years[realCurrentYear + 1] = true;
+    state.entries.forEach(function (e) { years[Number(e.date.slice(0, 4))] = true; });
+    return Object.keys(years).map(Number).sort(function (a, b) { return b - a; });
+  }
+
+  function renderYearSelect() {
+    var years = availableYears();
+    yearSelect.innerHTML = '';
+    years.forEach(function (y) {
+      var opt = document.createElement('option');
+      opt.value = y;
+      opt.textContent = y;
+      if (y === Number(state.selectedYear)) opt.selected = true;
+      yearSelect.appendChild(opt);
+    });
+    if (!TAX_YEAR_PARAMS[state.selectedYear]) {
+      yearNoteEl.style.display = 'block';
+      yearNoteEl.textContent = 'No published federal tax parameters for ' + state.selectedYear + ' yet — showing estimates using ' + DEFAULT_TAX_YEAR + ' rates.';
+    } else {
+      yearNoteEl.style.display = 'none';
+    }
+  }
+
+  function renderDueDates() {
+    var year = Number(state.selectedYear);
+    document.getElementById('due-dates-title').textContent = year + ' due dates';
+    var dates = dueDatesForYear(year);
+    var now = new Date();
+    var nextIdx = year === realCurrentYear ? dates.findIndex(function (d) { return d.date >= now; }) : -1;
+    var noteEl = document.getElementById('due-dates-note');
+    if (year < realCurrentYear) {
+      noteEl.style.display = 'block';
+      noteEl.textContent = 'This year has passed — dates shown for reference only.';
+    } else if (year > realCurrentYear) {
+      noteEl.style.display = 'block';
+      noteEl.textContent = 'This is a future year — dates shown for planning ahead.';
+    } else {
+      noteEl.style.display = 'none';
+    }
+    var el = document.getElementById('due-dates');
+    el.innerHTML = '';
+    dates.forEach(function (d, i) {
+      var div = document.createElement('div');
+      div.className = 'due' + (i === nextIdx ? ' next' : '');
+      var opts = { month: 'short', day: 'numeric' };
+      var label = d.date.toLocaleDateString('en-US', opts) + (d.date.getFullYear() !== year ? ', ' + d.date.getFullYear() : '');
+      div.innerHTML = '<div class="due-label">' + d.label + (i === nextIdx ? ' · next' : '') + '</div><div class="due-date">' + label + '</div>';
+      el.appendChild(div);
+    });
+  }
+
+  function typeLabel(e) {
+    if (e.note) return e.note;
+    if (e.type === 'income') return 'Income';
+    if (e.type === 'expense') return 'Expense';
+    if (e.type === 'payment') return 'Estimated payment';
+    return 'Entry';
+  }
+
+  function renderLedger() {
+    ledgerEl.innerHTML = '';
+    var yearEntries = entriesForYear(state.selectedYear);
+    if (yearEntries.length === 0) {
+      ledgerEl.innerHTML = '<div class="empty">No entries yet for ' + state.selectedYear + ' — log your first one above.</div>';
+      return;
+    }
+    var sorted = yearEntries.slice().sort(function (a, b) { return b.date.localeCompare(a.date); });
+
+    var visibleIds = {};
+    sorted.slice(0, 3).forEach(function (e) { visibleIds[e.id] = true; });
+    var activeOffscreen = (editingId && !visibleIds[editingId]) || (pendingDeleteId && !visibleIds[pendingDeleteId]);
+    var showAll = ledgerExpanded || activeOffscreen || sorted.length <= 3;
+    var toRender = showAll ? sorted : sorted.slice(0, 3);
+
+    toRender.forEach(function (e) {
+      var row = document.createElement('div');
+      row.className = 'ledger-row';
+      if (e.id === editingId) row.classList.add('editing');
+      if (e.id === pendingDeleteId) row.classList.add('confirming');
+
+      var tag = '';
+      if (e.isMileage) tag = '<span class="ledger-tag mileage">' + e.miles + ' mi</span>';
+      else if (e.isMeal) tag = '<span class="ledger-tag meal">50% deductible</span>';
+
+      var leftHtml = '<div class="ledger-left"><span class="ledger-date">' + e.date + '</span><span class="ledger-note">' + typeLabel(e) + tag + '</span></div>';
+
+      var rightHtml;
+      if (e.id === pendingDeleteId) {
+        rightHtml = '<div class="ledger-confirm">Delete this entry?' +
+          '<button class="btn-text danger" data-confirm-yes="' + e.id + '" type="button">Yes</button>' +
+          '<button class="btn-text" data-confirm-no="1" type="button">No</button></div>';
+      } else {
+        var sign = e.type === 'income' ? '+' : (e.type === 'payment' ? '✓ ' : '−');
+        rightHtml = '<div style="display:flex; align-items:center;"><span class="ledger-amt ' + e.type + '">' + sign + fmt(e.amount) + '</span>' +
+          '<button class="ledger-del" data-id="' + e.id + '" aria-label="Delete entry">×</button></div>';
+      }
+
+      row.innerHTML = leftHtml + rightHtml;
+      ledgerEl.appendChild(row);
+
+      bindTap(row, function (evt) {
+        if (evt.target.closest('.ledger-del') || evt.target.closest('.ledger-confirm')) return;
+        beginEdit(e.id);
+      });
+    });
+
+    if (sorted.length > 3) {
+      var toggleRow = document.createElement('div');
+      toggleRow.style.textAlign = 'center';
+      toggleRow.style.padding = '10px 0 2px';
+      var toggleBtn = document.createElement('button');
+      toggleBtn.type = 'button';
+      toggleBtn.className = 'btn-text';
+      toggleBtn.textContent = showAll ? 'Show fewer' : 'View all ' + sorted.length + ' entries';
+      toggleBtn.addEventListener('click', function () {
+        ledgerExpanded = !showAll;
+        renderLedger();
+      });
+      toggleRow.appendChild(toggleBtn);
+      ledgerEl.appendChild(toggleRow);
+    }
+
+    ledgerEl.querySelectorAll('.ledger-del').forEach(function (btn) {
+      bindTap(btn, function (evt) {
+        evt.stopPropagation();
+        pendingDeleteId = btn.getAttribute('data-id');
+        renderLedger();
+      });
+    });
+    ledgerEl.querySelectorAll('[data-confirm-yes]').forEach(function (btn) {
+      bindTap(btn, function (evt) {
+        evt.stopPropagation();
+        var id = btn.getAttribute('data-confirm-yes');
+        state.entries = state.entries.filter(function (e) { return e.id !== id; });
+        if (editingId === id) resetEntryForm();
+        pendingDeleteId = null;
+        save();
+        renderAll();
+      });
+    });
+    ledgerEl.querySelectorAll('[data-confirm-no]').forEach(function (btn) {
+      bindTap(btn, function (evt) {
+        evt.stopPropagation();
+        pendingDeleteId = null;
+        renderLedger();
+      });
+    });
+  }
+
+  function renderStats() {
+    var t = calcTotals(state.selectedYear);
+    document.getElementById('qbi-deduction').textContent = fmt(t.qbiDeduction);
+    document.getElementById('se-tax').textContent = fmt(t.seTax);
+    document.getElementById('addl-medicare').textContent = fmt(t.addlMedicareTax);
+    document.getElementById('fed-tax').textContent = fmt(t.fedTax);
+    document.getElementById('total-tax').textContent = fmt(t.total);
+    document.getElementById('safe-harbor').textContent = t.safeHarborTarget != null ? fmt(t.safeHarborTarget) : 'Not set';
+    document.getElementById('paid-so-far').textContent = fmt(t.covered);
+    document.getElementById('next-payment').textContent = fmt(t.nextPayment);
+    document.getElementById('next-payment-label').textContent = t.remainingQuarters === 0 ? 'Amount still owed' : 'Suggested next payment';
+
+    taxParamsNoteEl.textContent = 'Based on ' + (TAX_YEAR_PARAMS[state.selectedYear] ? state.selectedYear : DEFAULT_TAX_YEAR) + ' federal tax parameters (published ' + t.params.updated + '). Federal only — state tax isn\'t included.';
+
+    if (t.income > 0 && t.expenses > t.income) {
+      lossNoteEl.style.display = 'block';
+      lossNoteEl.textContent = 'Logged expenses currently exceed logged income for ' + state.selectedYear + ' — no tax owed on this yet.';
+    } else {
+      lossNoteEl.style.display = 'none';
+    }
+
+    var overpaidNoteEl = document.getElementById('overpaid-note');
+    if (t.overpaid > 0) {
+      overpaidNoteEl.style.display = 'block';
+      overpaidNoteEl.textContent = 'Looks like you\'ve covered ' + fmt(t.overpaid) + ' more than your target — nothing more needed for now.';
+    } else {
+      overpaidNoteEl.style.display = 'none';
+    }
+  }
+
+  function renderMethodology() {
+    var params = paramsForYear(state.selectedYear);
+    var std = params.stdDeduction[state.filingStatus];
+    var addl = params.addlMedicareThreshold[state.filingStatus];
+    var qbiPhase = params.qbiPhaseOut[state.filingStatus];
+    methodologyBody.innerHTML =
+      '<ul>' +
+      '<li><strong>Self-employment tax:</strong> 92.35% of net business income (income minus deductible expenses), taxed at 12.4% Social Security up to the ' + state.selectedYear + ' wage base of ' + fmt(params.ssWageBase) + ' (reduced only by your own W-2 wages, never a spouse\'s) plus 2.9% Medicare with no cap.</li>' +
+      '<li><strong>QBI deduction:</strong> 20% of net business income (after the deductible half of SE tax), capped at 20% of taxable income before the deduction. Full deduction below ' + fmt(qbiPhase.start) + ' of taxable income, then a straight-line taper to $0 across the next ' + fmt(qbiPhase.range) + ' — matching the real phase-out for service-type businesses, and a reasonable stand-in for other businesses too since it assumes no W-2 payroll or significant property of your own, which is true for most solo freelancers.</li>' +
+      '<li><strong>Additional Medicare tax:</strong> 0.9% on combined household wages + SE earnings above ' + fmt(addl) + ' for your filing status.</li>' +
+      '<li><strong>Federal income tax:</strong> ' + state.selectedYear + ' brackets, standard deduction of ' + fmt(std) + ' for your filing status, on your combined household income (your W-2 wages + your spouse\'s, if joint + net business profit).</li>' +
+      '<li><strong>Meals:</strong> only 50% of a meal expense counts as deductible.</li>' +
+      '<li><strong>Mileage:</strong> IRS standard mileage rate, applied by the date of each trip (2026 changed mid-year: 72.5¢/mi through June, 76¢/mi from July 1).</li>' +
+      '<li><strong>Safe harbor:</strong> target is the lesser of your projected total tax or 100% of last year\'s tax (110% if last year\'s AGI was over $150,000).</li>' +
+      '<li><strong>Already covered:</strong> your W-2 withholding (treated as paid evenly across the year, same as the IRS treats it) plus any estimated payments you\'ve logged, subtracted from your target to get the suggested next payment.</li>' +
+      '</ul>' +
+      '<p style="margin:0;">This is a simplified estimator — it doesn\'t include state tax, itemized deductions, retirement contributions, or health insurance deductions. Numbers are estimates for planning, not a substitute for a tax professional.</p>';
+  }
+
+  function computeMonthlyTotals(year) {
+    var months = [];
+    for (var i = 0; i < 12; i++) months.push({ income: 0, expenses: 0 });
+    entriesForYear(year).forEach(function (e) {
+      var m = Number(e.date.slice(5, 7)) - 1;
+      if (m < 0 || m > 11) return;
+      if (e.type === 'income') months[m].income += e.amount;
+      else if (e.type === 'expense') months[m].expenses += e.isMeal ? e.amount * 0.5 : e.amount;
+    });
+    return months;
+  }
+
+  function progressMessage(pct) {
+    if (pct <= 0) return 'Nothing set aside yet — there\'s still time before your next due date.';
+    if (pct < 25) return 'A start has been made — every bit logged now is less to find later.';
+    if (pct < 50) return 'A solid start — you\'re building a real cushion.';
+    if (pct < 75) return 'More than halfway there.';
+    if (pct < 100) return 'Close to fully covered — just a little further.';
+    return 'Fully covered for now — nothing more needed at the moment.';
+  }
+
+  function renderDashboardProgress(t) {
+    var el = document.getElementById('dash-progress');
+    if (t.target <= 0) {
+      el.innerHTML = '<p class="dash-empty">No tax owed yet on what\'s logged for ' + state.selectedYear + ' — nothing to track here.</p>';
+      return;
+    }
+    var pct = Math.min(100, (t.covered / t.target) * 100);
+    var remaining = Math.max(0, t.target - t.covered);
+    var remainingLabel = pct < 82 && remaining > 0
+      ? '<span class="progress-remaining-label">' + fmt(remaining) + ' left to go</span>'
+      : '';
+    var html = '<div class="progress-track chart-shape" data-label="Payment progress" data-value="' + progressMessage(pct) + '">' +
+      '<div class="progress-fill" style="width:' + pct.toFixed(1) + '%;"></div>' + remainingLabel + '</div>' +
+      '<p class="progress-summary">' + fmt(t.covered) + ' of ' + fmt(t.target) + ' covered so far <strong>(' + Math.round(pct) + '%)</strong></p>';
+    if (t.overpaid > 0) {
+      html += '<p class="helper-note" style="margin: 6px 0 0;">You\'ve covered ' + fmt(t.overpaid) + ' more than your target — nice cushion.</p>';
+    }
+    el.innerHTML = html;
+    el.querySelectorAll('.chart-shape').forEach(wireChartShape);
+  }
+
+  function renderDashboardMonthly(year) {
+    var el = document.getElementById('dash-monthly');
+    var months = computeMonthlyTotals(year);
+    var monthLabels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var fullMonthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    var maxVal = 0;
+    months.forEach(function (m) { maxVal = Math.max(maxVal, m.income, m.expenses); });
+    if (maxVal === 0) {
+      el.innerHTML = '<p class="dash-empty">No entries logged yet for ' + year + '.</p>';
+      return;
+    }
+    var chartW = 600, chartH = 150, padTop = 12;
+    var groupW = chartW / 12;
+    var barW = groupW * 0.32;
+    var svg = '<svg viewBox="0 0 ' + chartW + ' ' + (chartH + 18) + '" width="100%" style="display:block; overflow:visible;">';
+    months.forEach(function (m, i) {
+      var groupX = i * groupW;
+      var incomeH = (m.income / maxVal) * (chartH - padTop);
+      var expenseH = (m.expenses / maxVal) * (chartH - padTop);
+      var incomeX = groupX + groupW / 2 - barW - 1;
+      var expenseX = groupX + groupW / 2 + 1;
+      svg += '<rect class="month-bar chart-shape" data-label="' + fullMonthNames[i] + ' income" data-value="' + fmt(m.income) + '" x="' + incomeX.toFixed(1) + '" y="' + (padTop + chartH - padTop - incomeH).toFixed(1) + '" width="' + barW.toFixed(1) + '" height="' + Math.max(incomeH, 0.5).toFixed(1) + '" rx="1.5" style="fill:var(--income);"></rect>';
+      svg += '<rect class="month-bar chart-shape" data-label="' + fullMonthNames[i] + ' expenses" data-value="' + fmt(m.expenses) + '" x="' + expenseX.toFixed(1) + '" y="' + (padTop + chartH - padTop - expenseH).toFixed(1) + '" width="' + barW.toFixed(1) + '" height="' + Math.max(expenseH, 0.5).toFixed(1) + '" rx="1.5" style="fill:var(--expense);"></rect>';
+      svg += '<text x="' + (groupX + groupW / 2).toFixed(1) + '" y="' + (chartH + 14) + '" font-size="9" text-anchor="middle" font-family="Inter, sans-serif" style="fill:var(--ink-soft);">' + monthLabels[i] + '</text>';
+    });
+    svg += '</svg>';
+    var legend = '<div class="chart-legend">' +
+      '<div class="chart-legend-item"><span class="chart-legend-swatch" style="background:var(--income);"></span>Income</div>' +
+      '<div class="chart-legend-item"><span class="chart-legend-swatch" style="background:var(--expense);"></span>Expenses</div>' +
+      '</div>';
+    el.innerHTML = svg + legend;
+    el.querySelectorAll('.chart-shape').forEach(wireChartShape);
+  }
+
+  function renderDashboardBreakdown(t) {
+    var el = document.getElementById('dash-breakdown');
+    if (t.total <= 0) {
+      el.innerHTML = '<p class="dash-empty">No tax owed yet on what\'s logged for ' + state.selectedYear + '.</p>';
+      return;
+    }
+    var segments = [
+      { label: 'Self-employment tax', value: t.seTax, color: 'var(--expense)', term: 'se-tax' },
+      { label: 'Federal income tax', value: t.fedTax, color: 'var(--mileage)', term: 'fed-tax' },
+      { label: 'Additional Medicare tax', value: t.addlMedicareTax, color: 'var(--payment)', term: 'addl-medicare' }
+    ];
+    var r = 55, cx = 65, cy = 65, strokeW = 18;
+    var circumference = 2 * Math.PI * r;
+    var offset = 0;
+    var svg = '<svg viewBox="0 0 130 130" width="130" height="130" style="flex-shrink:0; overflow:visible;">';
+    svg += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke-width="' + strokeW + '" style="stroke:var(--line);"></circle>';
+    segments.forEach(function (seg) {
+      if (seg.value <= 0) return;
+      var frac = seg.value / t.total;
+      var dash = frac * circumference;
+      svg += '<circle class="donut-segment chart-shape" data-label="' + seg.label + '" data-value="' + fmt(seg.value) + ' (' + Math.round(frac * 100) + '%)" cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke-width="' + strokeW + '" style="stroke:' + seg.color + ';" ' +
+        'stroke-dasharray="' + dash.toFixed(2) + ' ' + (circumference - dash).toFixed(2) + '" ' +
+        'stroke-dashoffset="' + (-offset).toFixed(2) + '" transform="rotate(-90 ' + cx + ' ' + cy + ')"></circle>';
+      offset += dash;
+    });
+    svg += '<text x="' + cx + '" y="' + (cy - 3) + '" text-anchor="middle" font-size="14" style="fill:var(--ink); font-family:\'IBM Plex Mono\', monospace;">' + fmt(t.total) + '</text>';
+    svg += '<text x="' + cx + '" y="' + (cy + 13) + '" text-anchor="middle" font-size="9" style="fill:var(--ink-soft); font-family:Inter, sans-serif;">total tax</text>';
+    svg += '</svg>';
+
+    var legend = '<div>';
+    segments.forEach(function (seg) {
+      if (seg.value <= 0) return;
+      legend += '<div class="chart-legend-item" style="margin-bottom:6px;"><span class="chart-legend-swatch" style="background:' + seg.color + ';"></span>' + seg.label + '<button class="info-btn" type="button" data-term="' + seg.term + '">?</button>: <strong style="margin-left:4px; font-family:\'IBM Plex Mono\', monospace; color:var(--ink); font-weight:500;">' + fmt(seg.value) + '</strong></div>';
+    });
+    if (t.qbiDeduction > 0) {
+      legend += '<div class="chart-legend-item" style="margin-top:8px; color:var(--income);"><span class="chart-legend-swatch" style="background:var(--income);"></span>QBI deduction saved you ' + fmt(t.qbiDeduction) + '<button class="info-btn" type="button" data-term="qbi">?</button></div>';
+    }
+    legend += '</div>';
+    el.innerHTML = '<div class="breakdown-row">' + svg + legend + '</div>';
+    el.querySelectorAll('.info-btn').forEach(wireInfoButton);
+    el.querySelectorAll('.chart-shape').forEach(wireChartShape);
+  }
+
+  function renderDashboardQuickStats(year, t) {
+    var el = document.getElementById('dash-quickstats');
+    var effRate = t.netBusiness > 0 ? (t.total / t.netBusiness) * 100 : 0;
+    var miles = entriesForYear(year).reduce(function (sum, e) { return sum + (e.isMileage ? e.miles : 0); }, 0);
+
+    var daysLabel = '—';
+    if (Number(year) === realCurrentYear) {
+      var dates = dueDatesForYear(year);
+      var now = new Date();
+      var next = dates.find(function (d) { return d.date >= now; });
+      if (next) daysLabel = Math.ceil((next.date - now) / 86400000) + 'd';
+    }
+
+    el.innerHTML =
+      '<div class="stat-grid cols-3">' +
+      '<div class="stat"><div class="stat-label">Effective tax rate<button class="info-btn" type="button" data-term="effective-rate">?</button></div><div class="stat-value">' + effRate.toFixed(1) + '%</div></div>' +
+      '<div class="stat"><div class="stat-label">Miles logged</div><div class="stat-value">' + Math.round(miles).toLocaleString() + '</div></div>' +
+      '<div class="stat"><div class="stat-label">Next payment</div><div class="stat-value">' + daysLabel + '</div></div>' +
+      '</div>';
+    el.querySelectorAll('.info-btn').forEach(wireInfoButton);
+  }
+
+  function renderDashboardSnapshot(year, t) {
+    var el = document.getElementById('dash-snapshot');
+    document.getElementById('dash-snapshot-title').textContent = 'Your ' + year + ' so far';
+    var payments = entriesForYear(year).reduce(function (sum, e) { return e.type === 'payment' ? sum + e.amount : sum; }, 0);
+    el.innerHTML =
+      '<div class="stat-grid cols-3">' +
+      '<div class="stat"><div class="stat-label">Total earnings</div><div class="stat-value">' + fmt(t.income) + '</div></div>' +
+      '<div class="stat"><div class="stat-label">Total expenses</div><div class="stat-value">' + fmt(t.expensesRaw) + '</div></div>' +
+      '<div class="stat"><div class="stat-label">Payments sent</div><div class="stat-value">' + fmt(payments) + '</div></div>' +
+      '</div>';
+  }
+
+  function renderDashboard() {
+    hideChartTooltipNow();
+    var year = state.selectedYear;
+    var t = calcTotals(year);
+    renderDashboardSnapshot(year, t);
+    renderDashboardProgress(t);
+    renderDashboardMonthly(year);
+    renderDashboardBreakdown(t);
+    renderDashboardQuickStats(year, t);
+  }
+
+  function updateEntryFieldsUI() {
+    btnIncome.classList.toggle('active', state.entryType === 'income');
+    btnExpense.classList.toggle('active', state.entryType === 'expense');
+    btnMileage.classList.toggle('active', state.entryType === 'mileage');
+    btnPayment.classList.toggle('active', state.entryType === 'payment');
+    mealRow.style.display = state.entryType === 'expense' ? 'flex' : 'none';
+    mileageRow.style.display = state.entryType === 'mileage' ? 'block' : 'none';
+    if (state.entryType === 'mileage') {
+      amountLabelEl.textContent = 'Miles';
+      amountEl.step = '0.1';
+      updateMileageHelper();
+    } else {
+      amountLabelEl.textContent = 'Amount';
+      amountEl.step = '1';
+    }
+    updateEntryWarning();
+  }
+
+  function updateMileageHelper() {
+    var miles = parseFloat(amountEl.value) || 0;
+    var lookup = mileageRateFor(dateEl.value || todayStr());
+    var rate = lookup.rate;
+    var centsLabel = Math.round(rate * 1000) / 10 + '¢/mi';
+    var approxNote = lookup.exact ? '' : ' (approximate — no confirmed rate for this date)';
+    var text = miles > 0
+      ? miles + ' mi × ' + centsLabel + ' = ' + fmt(miles * rate) + ' deductible' + approxNote
+      : 'Rate for this date: ' + centsLabel + approxNote;
+    document.getElementById('mileage-helper-text').textContent = text;
+  }
+
+  function openGlossaryTerm(term) {
+    switchView('terms');
+    var el = document.getElementById('term-' + term);
+    if (!el) return;
+    document.querySelectorAll('#glossary-body .term').forEach(function (t) {
+      t.open = (t === el);
+    });
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el.classList.add('highlight');
+    setTimeout(function () { el.classList.remove('highlight'); }, 2200);
+  }
+
+  function updateEntryWarning() {
+    var d = dateEl.value || todayStr();
+    var raw = parseFloat(amountEl.value) || 0;
+    var msg = '';
+    if (d.slice(0, 4) !== String(state.selectedYear)) {
+      msg = 'This date falls outside ' + state.selectedYear + ' — it will show up when you switch to that year.';
+    } else if (state.entryType === 'mileage' && !mileageRateFor(d).exact) {
+      msg = 'No confirmed mileage rate for this date yet — using the closest known rate as an estimate.';
+    } else if (state.entryType === 'mileage' && raw > 1000) {
+      msg = 'That\'s a lot of miles for one entry — double check it.';
+    } else if (state.entryType !== 'mileage' && raw > 1000000) {
+      msg = 'That\'s a very large amount — double check it.';
+    }
+    entryWarningEl.style.display = msg ? 'block' : 'none';
+    entryWarningEl.textContent = msg;
+  }
+
+  function beginEdit(id) {
+    var entry = state.entries.find(function (e) { return e.id === id; });
+    if (!entry) return;
+    pendingDeleteId = null;
+    editingId = id;
+    state.entryType = entry.isMileage ? 'mileage' : entry.type;
+    dateEl.value = entry.date;
+    amountEl.value = entry.isMileage ? entry.miles : entry.amount;
+    noteEl.value = entry.note || '';
+    mealCheckbox.checked = !!entry.isMeal;
+    addBtn.textContent = 'Save changes';
+    cancelEditBtn.style.display = 'inline-block';
+    updateEntryFieldsUI();
+    renderLedger();
+  }
+
+  function cancelEdit() {
+    editingId = null;
+    addBtn.textContent = 'Add';
+    cancelEditBtn.style.display = 'none';
+    amountEl.value = '';
+    noteEl.value = '';
+    mealCheckbox.checked = false;
+    updateEntryFieldsUI();
+  }
+
+  function resetEntryForm() {
+    cancelEdit();
+    state.entryType = 'income';
+    dateEl.value = todayStr();
+    updateEntryFieldsUI();
+  }
+
+  function updateW2FieldsUI() {
+    var isMfj = state.filingStatus === 'mfj';
+    spouseW2FieldEl.style.display = isMfj ? 'block' : 'none';
+    w2LabelEl.childNodes[0].nodeValue = isMfj ? 'Your W-2 wages this year' : 'W-2 wages this year';
+  }
+
+  function renderAll() {
+    renderYearSelect();
+    statusEl.value = state.filingStatus;
+    w2El.value = state.w2Wages;
+    w2SpouseEl.value = state.w2WagesSpouse;
+    w2WithholdingEl.value = state.w2Withholding;
+    priorTaxEl.value = state.priorYearTax;
+    priorAgiEl.value = state.priorYearAGI;
+    updateW2FieldsUI();
+    updateEntryFieldsUI();
+    renderLedger();
+    renderStats();
+    renderDueDates();
+    renderMethodology();
+    renderDashboard();
+  }
+
+  function save() {
+    try {
+      window.storage.set(STORAGE_KEY, JSON.stringify(state), false).catch(function () {
+        statusLine.textContent = 'Could not save — your entries may not persist.';
+      });
+    } catch (err) {
+      statusLine.textContent = 'Could not save — your entries may not persist.';
+    }
+  }
+
+  function load() {
+    statusLine.textContent = 'Loading your entries...';
+    try {
+      window.storage.get(STORAGE_KEY, false).then(function (result) {
+        if (result && result.value) {
+          var parsed = JSON.parse(result.value);
+          state.filingStatus = parsed.filingStatus || 'single';
+          state.entries = parsed.entries || [];
+          state.w2Wages = parsed.w2Wages || '';
+          state.w2WagesSpouse = parsed.w2WagesSpouse || '';
+          state.w2Withholding = parsed.w2Withholding || '';
+          state.priorYearTax = parsed.priorYearTax || '';
+          state.priorYearAGI = parsed.priorYearAGI || '';
+          state.selectedYear = parsed.selectedYear || realCurrentYear;
+        }
+        statusLine.textContent = '';
+        renderAll();
+      }).catch(function () {
+        statusLine.textContent = '';
+        renderAll();
+      });
+    } catch (err) {
+      statusLine.textContent = '';
+      renderAll();
+    }
+  }
+
+  function exportCSV() {
+    var year = state.selectedYear;
+    var yearEntries = entriesForYear(year).slice().sort(function (a, b) { return a.date.localeCompare(b.date); });
+    var anyApproxMileage = false;
+    var rows = [['Date', 'Type', 'Amount', 'Deductible', 'Miles', 'Meal (50%)', 'Note']];
+    yearEntries.forEach(function (e) {
+      var deductible = e.type === 'expense' ? (e.isMeal ? e.amount * 0.5 : e.amount) : e.amount;
+      if (e.isMileage && e.mileageRateExact === false) anyApproxMileage = true;
+      rows.push([e.date, e.type, e.amount.toFixed(2), deductible.toFixed(2), e.isMileage ? e.miles : '', e.isMeal ? 'yes' : '', e.note || '']);
+    });
+    var t = calcTotals(year);
+    rows.push([]);
+    rows.push(['Summary for ' + year]);
+    if (!TAX_YEAR_PARAMS[year]) {
+      rows.push(['Note', 'No published federal tax parameters for ' + year + ' yet — figures below use ' + DEFAULT_TAX_YEAR + ' rates as an estimate.']);
+    }
+    if (anyApproxMileage) {
+      rows.push(['Note', 'One or more mileage entries used an estimated rate — no confirmed IRS rate was available for that date.']);
+    }
+    rows.push(['Total income', t.income.toFixed(2)]);
+    rows.push(['Deductible expenses', t.expenses.toFixed(2)]);
+    rows.push(['QBI deduction', t.qbiDeduction.toFixed(2)]);
+    rows.push(['Self-employment tax', t.seTax.toFixed(2)]);
+    rows.push(['Additional Medicare tax', t.addlMedicareTax.toFixed(2)]);
+    rows.push(['Federal income tax', t.fedTax.toFixed(2)]);
+    rows.push(['Total projected tax', t.total.toFixed(2)]);
+    rows.push(['W-2 withholding', t.w2Withholding.toFixed(2)]);
+    rows.push(['Estimated payments made', t.paidEstimated.toFixed(2)]);
+    rows.push(['Total already covered', t.covered.toFixed(2)]);
+    rows.push(['Safe harbor target', t.safeHarborTarget != null ? t.safeHarborTarget.toFixed(2) : 'not set']);
+    rows.push(['Remaining balance', t.balance.toFixed(2)]);
+
+    var csv = rows.map(function (r) {
+      return r.map(function (cell) {
+        cell = String(cell === undefined ? '' : cell);
+        return /[",\n]/.test(cell) ? '"' + cell.replace(/"/g, '""') + '"' : cell;
+      }).join(',');
+    }).join('\n');
+
+    var blob = new Blob([csv], { type: 'text/csv' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'ledger-' + year + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  yearSelect.addEventListener('change', function () {
+    state.selectedYear = Number(yearSelect.value);
+    resetEntryForm();
+    pendingDeleteId = null;
+    ledgerExpanded = false;
+    save();
+    renderAll();
+  });
+
+  statusEl.addEventListener('change', function () {
+    state.filingStatus = statusEl.value;
+    updateW2FieldsUI();
+    save();
+    renderStats();
+    renderMethodology();
+  });
+
+  w2El.addEventListener('input', function () { state.w2Wages = w2El.value; save(); renderStats(); });
+  w2SpouseEl.addEventListener('input', function () { state.w2WagesSpouse = w2SpouseEl.value; save(); renderStats(); });
+  w2WithholdingEl.addEventListener('input', function () { state.w2Withholding = w2WithholdingEl.value; save(); renderStats(); });
+  priorTaxEl.addEventListener('input', function () { state.priorYearTax = priorTaxEl.value; save(); renderStats(); });
+  priorAgiEl.addEventListener('input', function () { state.priorYearAGI = priorAgiEl.value; save(); renderStats(); });
+
+  btnIncome.addEventListener('click', function () { state.entryType = 'income'; updateEntryFieldsUI(); });
+  btnExpense.addEventListener('click', function () { state.entryType = 'expense'; updateEntryFieldsUI(); });
+  btnMileage.addEventListener('click', function () { state.entryType = 'mileage'; updateEntryFieldsUI(); });
+  btnPayment.addEventListener('click', function () { state.entryType = 'payment'; updateEntryFieldsUI(); });
+
+  amountEl.addEventListener('input', function () {
+    if (state.entryType === 'mileage') updateMileageHelper();
+    updateEntryWarning();
+  });
+  dateEl.addEventListener('change', function () {
+    if (state.entryType === 'mileage') updateMileageHelper();
+    updateEntryWarning();
+  });
+
+  cancelEditBtn.addEventListener('click', resetEntryForm);
+  exportBtn.addEventListener('click', exportCSV);
+
+  addBtn.addEventListener('click', function () {
+    var raw = parseFloat(amountEl.value);
+    if (!raw || raw <= 0) {
+      amountEl.focus();
+      return;
+    }
+    var entryDate = dateEl.value || todayStr();
+    var isNew = !editingId;
+    var entry = isNew
+      ? { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7) }
+      : state.entries.find(function (e) { return e.id === editingId; });
+
+    entry.type = state.entryType === 'mileage' ? 'expense' : state.entryType;
+    entry.date = entryDate;
+    entry.note = noteEl.value.trim();
+    delete entry.isMileage;
+    delete entry.isMeal;
+    delete entry.miles;
+    delete entry.mileageRate;
+
+    if (state.entryType === 'mileage') {
+      var rateLookup = mileageRateFor(entryDate);
+      entry.isMileage = true;
+      entry.miles = raw;
+      entry.mileageRate = rateLookup.rate;
+      entry.mileageRateExact = rateLookup.exact;
+      entry.amount = raw * rateLookup.rate;
+    } else {
+      entry.amount = raw;
+      if (state.entryType === 'expense' && mealCheckbox.checked) entry.isMeal = true;
+    }
+
+    if (isNew) state.entries.push(entry);
+    cancelEdit();
+    pendingDeleteId = null;
+    save();
+    renderAll();
+  });
+
+  var GLOSSARY_SUMMARIES = {
+    'se-tax': { title: 'Self-employment tax', summary: 'Covers both the employee and employer share of Social Security and Medicare, since there\'s no employer here to split it with you.' },
+    'qbi': { title: 'QBI deduction', summary: 'Deduct 20% of your net business profit before federal tax — automatic below about $201,775 (single) / $403,550 (joint), then it tapers off.' },
+    'fed-tax': { title: 'Federal income tax', summary: 'Tax on your income after deductions, using brackets — only your top slice of income is taxed at your highest rate.' },
+    'addl-medicare': { title: 'Additional Medicare tax', summary: 'An extra 0.9% that only kicks in once your income passes about $200,000.' },
+    'safe-harbor': { title: 'Safe harbor', summary: 'The minimum you need to pay throughout the year to avoid an underpayment penalty.' },
+    'quarterly': { title: 'Quarterly estimated payments', summary: 'Four smaller payments spread across the year instead of one lump sum in April.' },
+    'mileage-rate': { title: 'Standard mileage rate', summary: 'A flat per-mile rate the IRS lets you deduct instead of tracking actual vehicle costs.' },
+    'w2-wages': { title: 'W-2 wages', summary: 'Your own W-2 earnings — used to figure out how much room is left under your Social Security cap.' },
+    'w2-wages-spouse': { title: 'Spouse\'s W-2 wages', summary: 'Counted in your household income for tax brackets, but never affects your own Social Security cap.' },
+    'w2-withholding': { title: 'W-2 withholding', summary: 'Tax already being sent to the IRS from your paycheck — counted toward what you still owe.' },
+    'already-covered': { title: 'Already covered', summary: 'Your W-2 withholding plus any estimated payments you\'ve logged — money already chipping away at your bill.' },
+    'effective-rate': { title: 'Effective tax rate', summary: 'Total projected tax divided by your net business income — roughly what share of what you kept goes to taxes.' }
+  };
+
+  var tooltipEl = document.getElementById('term-tooltip');
+  var tooltipTitleEl = document.getElementById('term-tooltip-title');
+  var tooltipSummaryEl = document.getElementById('term-tooltip-summary');
+  var tooltipMoreBtn = document.getElementById('term-tooltip-more');
+  var tooltipActiveTerm = null;
+  var tooltipHideTimer = null;
+
+  var chartTooltipEl = document.getElementById('chart-tooltip');
+  var chartTooltipLabelEl = document.getElementById('chart-tooltip-label');
+  var chartTooltipValueEl = document.getElementById('chart-tooltip-value');
+  var chartTooltipHideTimer = null;
+  var activeChartShapeEl = null;
+
+  function positionTooltip(btn) {
+    var rect = btn.getBoundingClientRect();
+    var tw = 250;
+    var left = rect.left + rect.width / 2 - tw / 2;
+    left = Math.max(12, Math.min(left, window.innerWidth - tw - 12));
+    var top = rect.bottom + 8;
+    if (top + 110 > window.innerHeight) top = rect.top - 118;
+    tooltipEl.style.left = (left + window.scrollX) + 'px';
+    tooltipEl.style.top = (top + window.scrollY) + 'px';
+  }
+
+  function showTooltip(btn, term) {
+    var data = GLOSSARY_SUMMARIES[term];
+    if (!data) return;
+    hideChartTooltipNow();
+    clearTimeout(tooltipHideTimer);
+    tooltipActiveTerm = term;
+    tooltipTitleEl.textContent = data.title;
+    tooltipSummaryEl.textContent = data.summary;
+    tooltipEl.classList.add('visible');
+    positionTooltip(btn);
+  }
+
+  function hideTooltipSoon() {
+    tooltipHideTimer = setTimeout(function () {
+      tooltipEl.classList.remove('visible');
+      tooltipActiveTerm = null;
+    }, 180);
+  }
+
+  function hideTooltipNow() {
+    clearTimeout(tooltipHideTimer);
+    tooltipEl.classList.remove('visible');
+    tooltipActiveTerm = null;
+  }
+
+  function bindTap(el, handler) {
+    var startX = 0, startY = 0, startTime = 0, moved = false;
+    el.addEventListener('touchstart', function (evt) {
+      var touch = evt.touches[0];
+      startX = touch.clientX;
+      startY = touch.clientY;
+      startTime = Date.now();
+      moved = false;
+    }, { passive: true });
+    el.addEventListener('touchmove', function (evt) {
+      var touch = evt.touches[0];
+      if (Math.abs(touch.clientX - startX) > 10 || Math.abs(touch.clientY - startY) > 10) moved = true;
+    }, { passive: true });
+    el.addEventListener('touchend', function (evt) {
+      if (!moved && (Date.now() - startTime) < 500) {
+        evt.preventDefault();
+        handler(evt);
+      }
+    }, { passive: false });
+    el.addEventListener('click', handler);
+  }
+
+  function wireInfoButton(btn) {
+    var term = btn.getAttribute('data-term');
+    function toggle(evt) {
+      evt.preventDefault();
+      evt.stopPropagation();
+      if (tooltipActiveTerm === term && tooltipEl.classList.contains('visible')) {
+        hideTooltipNow();
+      } else {
+        showTooltip(btn, term);
+      }
+    }
+    btn.addEventListener('mouseenter', function () { showTooltip(btn, term); });
+    btn.addEventListener('mouseleave', hideTooltipSoon);
+    btn.addEventListener('focus', function () { showTooltip(btn, term); });
+    btn.addEventListener('blur', hideTooltipSoon);
+    bindTap(btn, toggle);
+  }
+
+  document.querySelectorAll('.info-btn').forEach(wireInfoButton);
+
+  function setActiveChartShape(el) {
+    if (activeChartShapeEl && activeChartShapeEl !== el) activeChartShapeEl.classList.remove('chart-shape-active');
+    activeChartShapeEl = el;
+    el.classList.add('chart-shape-active');
+  }
+
+  function clearActiveChartShape() {
+    if (activeChartShapeEl) activeChartShapeEl.classList.remove('chart-shape-active');
+    activeChartShapeEl = null;
+  }
+
+  function positionChartTooltip(el) {
+    var rect = el.getBoundingClientRect();
+    var tw = chartTooltipEl.offsetWidth || 140;
+    var left = rect.left + rect.width / 2 - tw / 2;
+    left = Math.max(8, Math.min(left, window.innerWidth - tw - 8));
+    var top = rect.top - chartTooltipEl.offsetHeight - 10;
+    if (top < 8) top = rect.bottom + 10;
+    chartTooltipEl.style.left = (left + window.scrollX) + 'px';
+    chartTooltipEl.style.top = (top + window.scrollY) + 'px';
+  }
+
+  function showChartTooltip(el, label, value) {
+    hideTooltipNow();
+    clearTimeout(chartTooltipHideTimer);
+    setActiveChartShape(el);
+    chartTooltipLabelEl.textContent = label;
+    chartTooltipValueEl.textContent = value;
+    chartTooltipEl.classList.add('visible');
+    positionChartTooltip(el);
+  }
+
+  function hideChartTooltipSoon() {
+    chartTooltipHideTimer = setTimeout(function () {
+      chartTooltipEl.classList.remove('visible');
+      clearActiveChartShape();
+    }, 180);
+  }
+
+  function hideChartTooltipNow() {
+    clearTimeout(chartTooltipHideTimer);
+    chartTooltipEl.classList.remove('visible');
+    clearActiveChartShape();
+  }
+
+  function wireChartShape(el) {
+    var label = el.getAttribute('data-label');
+    var value = el.getAttribute('data-value');
+    function toggle(evt) {
+      evt.stopPropagation();
+      if (evt.cancelable) evt.preventDefault();
+      if (activeChartShapeEl === el && chartTooltipEl.classList.contains('visible')) {
+        hideChartTooltipNow();
+      } else {
+        showChartTooltip(el, label, value);
+      }
+    }
+    el.addEventListener('mouseenter', function () { showChartTooltip(el, label, value); });
+    el.addEventListener('mouseleave', hideChartTooltipSoon);
+    bindTap(el, toggle);
+  }
+
+  tooltipEl.addEventListener('mouseenter', function () { clearTimeout(tooltipHideTimer); });
+  tooltipEl.addEventListener('mouseleave', hideTooltipSoon);
+
+  tooltipMoreBtn.addEventListener('click', function (evt) {
+    evt.stopPropagation();
+    var term = tooltipActiveTerm;
+    hideTooltipNow();
+    if (term) openGlossaryTerm(term);
+  });
+
+  document.addEventListener('click', function (evt) {
+    if (!evt.target.closest('.info-btn') && !evt.target.closest('.term-tooltip')) {
+      hideTooltipNow();
+    }
+    if (!evt.target.closest('.chart-shape') && !evt.target.closest('.chart-tooltip')) {
+      hideChartTooltipNow();
+    }
+  });
+
+  function switchView(view) {
+    currentView = view;
+    viewLedgerEl.style.display = view === 'ledger' ? 'block' : 'none';
+    viewDashboardEl.style.display = view === 'dashboard' ? 'block' : 'none';
+    viewTermsEl.style.display = view === 'terms' ? 'block' : 'none';
+    navLedgerBtn.classList.toggle('active', view === 'ledger');
+    navDashboardBtn.classList.toggle('active', view === 'dashboard');
+    navTermsBtn.classList.toggle('active', view === 'terms');
+    if (view === 'dashboard') {
+      pageTitleEl.textContent = 'Dashboard';
+      pageSubEl.textContent = 'A live snapshot of ' + state.selectedYear + ' — updates as you log entries.';
+      renderDashboard();
+    } else if (view === 'terms') {
+      pageTitleEl.textContent = 'Tax terms, explained';
+      pageSubEl.textContent = 'Plain-English definitions for the jargon used throughout this tool.';
+    } else {
+      pageTitleEl.textContent = 'Ledger';
+      pageSubEl.textContent = 'A running estimate of what you owe, updated every time you log something.';
+    }
+    window.scrollTo(0, 0);
+  }
+
+  navLedgerBtn.addEventListener('click', function () { switchView('ledger'); });
+  navDashboardBtn.addEventListener('click', function () { switchView('dashboard'); });
+  navTermsBtn.addEventListener('click', function () { switchView('terms'); });
+
+  dateEl.value = todayStr();
+  renderAll();
+  load();
+})();
+</script>
+</body>
+</html>

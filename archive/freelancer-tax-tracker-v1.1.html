@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="theme-color" content="#1C2B33" />
+<title>Ledger — freelance tax tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --paper: #FAF7F0;
+    --paper-raised: #FFFFFF;
+    --ink: #1C2B33;
+    --ink-soft: #5B6B72;
+    --line: #E3DFD3;
+    --income: #2F6B4F;
+    --income-bg: #E7F0EA;
+    --expense: #A6532B;
+    --expense-bg: #F5E9E0;
+    --warn: #92680B;
+    --warn-bg: #F3ECD6;
+    --mileage: #375E7D;
+    --mileage-bg: #E6ECF1;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 28px;
+    margin: 0 0 2px;
+    letter-spacing: -0.01em;
+  }
+  .sub {
+    color: var(--ink-soft);
+    font-size: 14px;
+    margin: 0 0 1.75rem;
+  }
+  .field-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .field { flex: 1; min-width: 140px; }
+  label { display: block; font-size: 12px; color: var(--ink-soft); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.04em; }
+  select, input {
+    width: 100%;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    padding: 9px 10px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--paper-raised);
+    color: var(--ink);
+  }
+  select:focus, input:focus { outline: 2px solid var(--ink); outline-offset: 1px; }
+
+  .card {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+  .card h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 1rem;
+  }
+
+  .entry-form { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; }
+  .entry-form .field { min-width: 110px; }
+  .entry-form button {
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    border-radius: 6px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    height: 38px;
+  }
+  .entry-form button:active { transform: scale(0.98); }
+  .type-toggle { display: flex; gap: 6px; }
+  .type-toggle button {
+    flex: 1;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    border-radius: 6px;
+    padding: 9px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .type-toggle button.active.income { background: var(--income-bg); color: var(--income); border-color: var(--income); }
+  .type-toggle button.active.expense { background: var(--expense-bg); color: var(--expense); border-color: var(--expense); }
+  .type-toggle button.active.mileage { background: var(--mileage-bg); color: var(--mileage); border-color: var(--mileage); }
+
+  .checkbox-row { display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--ink); margin-bottom: 10px; }
+  .checkbox-row input[type="checkbox"] {
+    width: 16px; height: 16px; padding: 0; border: 1px solid var(--line); background: var(--paper-raised); accent-color: var(--ink);
+  }
+  .helper-note { font-size: 12px; color: var(--ink-soft); margin-bottom: 10px; }
+
+  .ledger { margin-top: 1.25rem; border-top: 1px solid var(--line); }
+  .ledger-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 14px;
+  }
+  .ledger-left { display: flex; flex-direction: column; gap: 2px; }
+  .ledger-date { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--ink-soft); }
+  .ledger-note { color: var(--ink); }
+  .ledger-tag {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-left: 6px;
+    position: relative;
+    top: -1px;
+  }
+  .ledger-tag.meal { background: var(--expense-bg); color: var(--expense); }
+  .ledger-tag.mileage { background: var(--mileage-bg); color: var(--mileage); }
+  .ledger-amt { font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 500; }
+  .ledger-amt.income { color: var(--income); }
+  .ledger-amt.expense { color: var(--expense); }
+  .ledger-del {
+    background: none; border: none; color: var(--ink-soft); cursor: pointer; font-size: 16px; margin-left: 10px; line-height: 1;
+  }
+  .empty { color: var(--ink-soft); font-size: 13px; padding: 1rem 0; text-align: center; }
+
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .stat { background: var(--paper); border-radius: 8px; padding: 0.9rem; }
+  .stat-label { font-size: 12px; color: var(--ink-soft); margin-bottom: 4px; }
+  .stat-value { font-family: 'IBM Plex Mono', monospace; font-size: 20px; font-weight: 500; }
+  .stat.highlight { background: var(--warn-bg); }
+  .stat.highlight .stat-value { color: var(--warn); }
+
+  .due-row { display: flex; justify-content: space-between; gap: 8px; margin-top: 0.5rem; }
+  .due {
+    flex: 1; text-align: center; padding: 10px 4px; border-radius: 8px; border: 1px solid var(--line); background: var(--paper);
+  }
+  .due.next { border-color: var(--warn); background: var(--warn-bg); }
+  .due-label { font-size: 11px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.03em; }
+  .due-date { font-family: 'IBM Plex Mono', monospace; font-size: 13px; margin-top: 3px; }
+  .status { font-size: 12px; color: var(--ink-soft); margin-top: 1rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Ledger</h1>
+  <p class="sub">A running estimate of what you owe, updated every time you log something.</p>
+
+  <div class="card">
+    <h2>Filing status</h2>
+    <select id="status">
+      <option value="single">Single</option>
+      <option value="mfj">Married filing jointly</option>
+      <option value="hoh">Head of household</option>
+    </select>
+  </div>
+
+  <div class="card">
+    <h2>Log an entry</h2>
+    <div class="field-row" style="margin-bottom: 10px;">
+      <div class="field type-toggle">
+        <button id="btn-income" class="active income" type="button">Income</button>
+        <button id="btn-expense" class="expense" type="button">Expense</button>
+        <button id="btn-mileage" class="mileage" type="button">Mileage</button>
+      </div>
+    </div>
+    <div class="entry-form">
+      <div class="field">
+        <label for="entry-date">Date</label>
+        <input type="date" id="entry-date" />
+      </div>
+      <div class="field">
+        <label for="entry-amount" id="entry-amount-label">Amount</label>
+        <input type="number" id="entry-amount" min="0" step="1" placeholder="0" />
+      </div>
+      <div class="field" style="flex: 2; min-width: 160px;">
+        <label for="entry-note">Note</label>
+        <input type="text" id="entry-note" placeholder="Client, project, expense..." />
+      </div>
+      <button id="add-btn" type="button">Add</button>
+    </div>
+    <div class="checkbox-row" id="meal-row" style="display:none;">
+      <input type="checkbox" id="entry-meal" />
+      <label for="entry-meal" style="margin:0; text-transform:none; letter-spacing:normal; color:var(--ink);">Meal — only 50% is deductible</label>
+    </div>
+    <div class="helper-note" id="mileage-row" style="display:none;"></div>
+    <div id="ledger" class="ledger"></div>
+  </div>
+
+  <div class="card">
+    <h2>What you owe</h2>
+    <div class="stat-grid">
+      <div class="stat">
+        <div class="stat-label">QBI deduction</div>
+        <div class="stat-value" id="qbi-deduction">$0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Self-employment tax</div>
+        <div class="stat-value" id="se-tax">$0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Federal income tax</div>
+        <div class="stat-value" id="fed-tax">$0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Total owed so far</div>
+        <div class="stat-value" id="total-tax">$0</div>
+      </div>
+      <div class="stat highlight" style="grid-column: span 2;">
+        <div class="stat-label">Set aside per quarter</div>
+        <div class="stat-value" id="quarterly">$0</div>
+      </div>
+    </div>
+    <p class="helper-note" style="margin-top: 0.9rem; margin-bottom: 0;">Estimates federal tax only, assuming your business income stays under the QBI phase-out range (roughly $200K single / $400K joint). State tax isn't included.</p>
+  </div>
+
+  <div class="card">
+    <h2>2026 due dates</h2>
+    <div class="due-row" id="due-dates"></div>
+  </div>
+
+  <div class="status" id="status-line"></div>
+</div>
+
+<script>
+(function () {
+  var stdDeduction = { single: 16100, mfj: 32200, hoh: 24150 };
+  var brackets = {
+    single: [[0,12400,0.10],[12400,50400,0.12],[50400,105700,0.22],[105700,201775,0.24],[201775,256225,0.32],[256225,640600,0.35],[640600,Infinity,0.37]],
+    mfj: [[0,24800,0.10],[24800,100800,0.12],[100800,211400,0.22],[211400,403550,0.24],[403550,512450,0.32],[512450,768700,0.35],[768700,Infinity,0.37]],
+    hoh: [[0,17700,0.10],[17700,67450,0.12],[67450,105700,0.22],[105700,201775,0.24],[201775,256200,0.32],[256200,640600,0.35],[640600,Infinity,0.37]]
+  };
+
+  var state = { filingStatus: 'single', entryType: 'income', entries: [] };
+  var STORAGE_KEY = 'tax-tracker-state';
+
+  // IRS optional standard mileage rate (business use), by effective date.
+  // 2026 had a mid-year bump (first since 2022) due to rising gas prices.
+  var MILEAGE_RATES = [
+    { from: '2025-01-01', to: '2025-12-31', rate: 0.70 },
+    { from: '2026-01-01', to: '2026-06-30', rate: 0.725 },
+    { from: '2026-07-01', to: '2026-12-31', rate: 0.76 }
+  ];
+
+  function mileageRateFor(dateStr) {
+    var match = MILEAGE_RATES.find(function (r) { return dateStr >= r.from && dateStr <= r.to; });
+    if (match) return match.rate;
+    // Fall back to the closest known rate for dates outside the table.
+    return dateStr < MILEAGE_RATES[0].from ? MILEAGE_RATES[0].rate : MILEAGE_RATES[MILEAGE_RATES.length - 1].rate;
+  }
+
+  var statusEl = document.getElementById('status');
+  var btnIncome = document.getElementById('btn-income');
+  var btnExpense = document.getElementById('btn-expense');
+  var btnMileage = document.getElementById('btn-mileage');
+  var dateEl = document.getElementById('entry-date');
+  var amountEl = document.getElementById('entry-amount');
+  var amountLabelEl = document.getElementById('entry-amount-label');
+  var noteEl = document.getElementById('entry-note');
+  var mealRow = document.getElementById('meal-row');
+  var mealCheckbox = document.getElementById('entry-meal');
+  var mileageRow = document.getElementById('mileage-row');
+  var addBtn = document.getElementById('add-btn');
+  var ledgerEl = document.getElementById('ledger');
+  var statusLine = document.getElementById('status-line');
+
+  function fmt(n) {
+    return '$' + Math.round(n).toLocaleString('en-US');
+  }
+
+  function todayStr() {
+    var d = new Date();
+    var m = String(d.getMonth() + 1).padStart(2, '0');
+    var day = String(d.getDate()).padStart(2, '0');
+    return d.getFullYear() + '-' + m + '-' + day;
+  }
+
+  function calcTotals() {
+    var income = 0, expenses = 0;
+    state.entries.forEach(function (e) {
+      if (e.type === 'income') {
+        income += e.amount;
+      } else {
+        expenses += e.isMeal ? e.amount * 0.5 : e.amount;
+      }
+    });
+    var net = Math.max(0, income - expenses);
+    var netSE = net * 0.9235;
+    var seTax = netSE * 0.153;
+    var seDeduction = seTax / 2;
+
+    // Qualified Business Income (Section 199A) deduction — simplified for
+    // filers under the phase-out threshold: no W-2/UBIA wage limit applied.
+    var qbi = Math.max(0, net - seDeduction);
+    var taxableBeforeQBI = Math.max(0, qbi - stdDeduction[state.filingStatus]);
+    var qbiDeduction = Math.min(qbi * 0.20, taxableBeforeQBI * 0.20);
+    var taxable = Math.max(0, taxableBeforeQBI - qbiDeduction);
+
+    var fedTax = 0;
+    brackets[state.filingStatus].forEach(function (b) {
+      var lo = b[0], hi = b[1], rate = b[2];
+      if (taxable > lo) fedTax += (Math.min(taxable, hi) - lo) * rate;
+    });
+    var total = seTax + fedTax;
+    return { income: income, expenses: expenses, seTax: seTax, fedTax: fedTax, qbiDeduction: qbiDeduction, total: total, quarterly: total / 4 };
+  }
+
+  function renderDueDates() {
+    var now = new Date();
+    var y = now.getFullYear();
+    var dates = [
+      { label: 'Q1', date: new Date(y, 3, 15) },
+      { label: 'Q2', date: new Date(y, 5, 15) },
+      { label: 'Q3', date: new Date(y, 8, 15) },
+      { label: 'Q4', date: new Date(y + 1, 0, 15) }
+    ];
+    var nextIdx = dates.findIndex(function (d) { return d.date >= now; });
+    var el = document.getElementById('due-dates');
+    el.innerHTML = '';
+    dates.forEach(function (d, i) {
+      var div = document.createElement('div');
+      div.className = 'due' + (i === nextIdx ? ' next' : '');
+      var opts = { month: 'short', day: 'numeric' };
+      var label = d.date.toLocaleDateString('en-US', opts) + (d.date.getFullYear() !== y ? ', ' + d.date.getFullYear() : '');
+      div.innerHTML = '<div class="due-label">' + d.label + (i === nextIdx ? ' · next' : '') + '</div><div class="due-date">' + label + '</div>';
+      el.appendChild(div);
+    });
+  }
+
+  function renderLedger() {
+    ledgerEl.innerHTML = '';
+    if (state.entries.length === 0) {
+      ledgerEl.innerHTML = '<div class="empty">No entries yet — log your first one above.</div>';
+      return;
+    }
+    var sorted = state.entries.slice().sort(function (a, b) { return b.date.localeCompare(a.date); });
+    sorted.forEach(function (e) {
+      var row = document.createElement('div');
+      row.className = 'ledger-row';
+      var sign = e.type === 'income' ? '+' : '−';
+      var tag = '';
+      if (e.isMileage) tag = '<span class="ledger-tag mileage">' + e.miles + ' mi</span>';
+      else if (e.isMeal) tag = '<span class="ledger-tag meal">50% deductible</span>';
+      row.innerHTML =
+        '<div class="ledger-left"><span class="ledger-date">' + e.date + '</span><span class="ledger-note">' + (e.note || (e.type === 'income' ? 'Income' : 'Expense')) + tag + '</span></div>' +
+        '<div style="display:flex; align-items:center;"><span class="ledger-amt ' + e.type + '">' + sign + fmt(e.amount) + '</span>' +
+        '<button class="ledger-del" data-id="' + e.id + '" aria-label="Delete entry">×</button></div>';
+      ledgerEl.appendChild(row);
+    });
+    ledgerEl.querySelectorAll('.ledger-del').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        state.entries = state.entries.filter(function (e) { return e.id !== btn.getAttribute('data-id'); });
+        save();
+        renderAll();
+      });
+    });
+  }
+
+  function renderStats() {
+    var t = calcTotals();
+    document.getElementById('qbi-deduction').textContent = fmt(t.qbiDeduction);
+    document.getElementById('se-tax').textContent = fmt(t.seTax);
+    document.getElementById('fed-tax').textContent = fmt(t.fedTax);
+    document.getElementById('total-tax').textContent = fmt(t.total);
+    document.getElementById('quarterly').textContent = fmt(t.quarterly);
+  }
+
+  function updateEntryFieldsUI() {
+    btnIncome.classList.toggle('active', state.entryType === 'income');
+    btnExpense.classList.toggle('active', state.entryType === 'expense');
+    btnMileage.classList.toggle('active', state.entryType === 'mileage');
+    mealRow.style.display = state.entryType === 'expense' ? 'flex' : 'none';
+    mileageRow.style.display = state.entryType === 'mileage' ? 'block' : 'none';
+    if (state.entryType === 'mileage') {
+      amountLabelEl.textContent = 'Miles';
+      amountEl.step = '0.1';
+      updateMileageHelper();
+    } else {
+      amountLabelEl.textContent = 'Amount';
+      amountEl.step = '1';
+    }
+  }
+
+  function updateMileageHelper() {
+    var miles = parseFloat(amountEl.value) || 0;
+    var rate = mileageRateFor(dateEl.value || todayStr());
+    var centsLabel = Math.round(rate * 1000) / 10 + '¢/mi';
+    mileageRow.textContent = miles > 0
+      ? miles + ' mi × ' + centsLabel + ' = ' + fmt(miles * rate) + ' deductible'
+      : 'Rate for this date: ' + centsLabel;
+  }
+
+  function renderAll() {
+    statusEl.value = state.filingStatus;
+    updateEntryFieldsUI();
+    renderLedger();
+    renderStats();
+    renderDueDates();
+  }
+
+  function save() {
+    try {
+      window.storage.set(STORAGE_KEY, JSON.stringify(state), false).catch(function () {
+        statusLine.textContent = 'Could not save — your entries may not persist.';
+      });
+    } catch (err) {
+      statusLine.textContent = 'Could not save — your entries may not persist.';
+    }
+  }
+
+  function load() {
+    statusLine.textContent = 'Loading your entries...';
+    window.storage.get(STORAGE_KEY, false).then(function (result) {
+      if (result && result.value) {
+        var parsed = JSON.parse(result.value);
+        state.filingStatus = parsed.filingStatus || 'single';
+        state.entries = parsed.entries || [];
+      }
+      statusLine.textContent = '';
+      renderAll();
+    }).catch(function () {
+      statusLine.textContent = '';
+      renderAll();
+    });
+  }
+
+  statusEl.addEventListener('change', function () {
+    state.filingStatus = statusEl.value;
+    save();
+    renderStats();
+  });
+
+  btnIncome.addEventListener('click', function () { state.entryType = 'income'; updateEntryFieldsUI(); });
+  btnExpense.addEventListener('click', function () { state.entryType = 'expense'; updateEntryFieldsUI(); });
+  btnMileage.addEventListener('click', function () { state.entryType = 'mileage'; updateEntryFieldsUI(); });
+
+  amountEl.addEventListener('input', function () {
+    if (state.entryType === 'mileage') updateMileageHelper();
+  });
+  dateEl.addEventListener('change', function () {
+    if (state.entryType === 'mileage') updateMileageHelper();
+  });
+
+  addBtn.addEventListener('click', function () {
+    var raw = parseFloat(amountEl.value);
+    if (!raw || raw <= 0) {
+      amountEl.focus();
+      return;
+    }
+    var entryDate = dateEl.value || todayStr();
+    var entry = {
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+      type: state.entryType === 'mileage' ? 'expense' : state.entryType,
+      date: entryDate,
+      note: noteEl.value.trim()
+    };
+    if (state.entryType === 'mileage') {
+      var rate = mileageRateFor(entryDate);
+      entry.isMileage = true;
+      entry.miles = raw;
+      entry.mileageRate = rate;
+      entry.amount = raw * rate;
+    } else {
+      entry.amount = raw;
+      if (state.entryType === 'expense' && mealCheckbox.checked) entry.isMeal = true;
+    }
+    state.entries.push(entry);
+    amountEl.value = '';
+    noteEl.value = '';
+    mealCheckbox.checked = false;
+    save();
+    renderAll();
+  });
+
+  dateEl.value = todayStr();
+  load();
+})();
+</script>
+</body>
+</html>
