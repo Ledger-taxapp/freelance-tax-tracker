@@ -2314,7 +2314,8 @@
     var priorAGI = Math.max(0, Number(state.priorYearAGI) || 0);
     var safeHarborMultiplier = priorAGI > 150000 ? 1.10 : 1.00;
     var safeHarborTarget = priorTax > 0 ? priorTax * safeHarborMultiplier : null;
-    var target = safeHarborTarget != null ? Math.min(total, safeHarborTarget) : total;
+    var currentYearTarget = total * 0.90;
+    var target = safeHarborTarget != null ? Math.min(currentYearTarget, safeHarborTarget) : currentYearTarget;
 
     // W-2 withholding is treated as paid evenly across the year, same as the
     // IRS treats it — so it counts toward the target right alongside any
@@ -2556,7 +2557,7 @@
       '<li><strong>Federal income tax:</strong> ' + state.selectedYear + ' brackets, standard deduction of ' + fmt(std) + ' for your filing status, on your combined household income (your W-2 wages + your spouse\'s, if joint + net business profit).</li>' +
       '<li><strong>Meals:</strong> only 50% of a meal expense counts as deductible.</li>' +
       '<li><strong>Mileage:</strong> IRS standard mileage rate, applied by the date of each trip (2026 changed mid-year: 72.5¢/mi through June, 76¢/mi from July 1).</li>' +
-      '<li><strong>Safe harbor:</strong> target is the lesser of your projected total tax or 100% of last year\'s tax (110% if last year\'s AGI was over $150,000).</li>' +
+      '<li><strong>Safe harbor:</strong> target is the lesser of 90% of your projected total tax or 100% of last year\'s tax (110% if last year\'s AGI was over $150,000).</li>' +
       '<li><strong>Already covered:</strong> your W-2 withholding (treated as paid evenly across the year, same as the IRS treats it) plus any estimated payments you\'ve logged, subtracted from your target to get the suggested next payment.</li>' +
       '</ul>' +
       '<p style="margin:0;">This is a simplified estimator — it doesn\'t include state tax, itemized deductions, retirement contributions, or health insurance deductions. Numbers are estimates for planning, not a substitute for a tax professional.</p>';

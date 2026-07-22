@@ -39,6 +39,6 @@ Everything lives in one IIFE at the bottom of the file. Key pieces, in `freelanc
 - v1 only supports Single, Married Filing Jointly, and Head of Household. Married Filing Separately and Qualifying Surviving Spouse are deferred to v2 — don't add them piecemeal (e.g. just adding the option to `#status`) without also working through their bracket/std-deduction/QBI-phase-out/safe-harbor implications in `TAX_YEAR_PARAMS` and `calcTotals()`.
 - SE tax = 92.35% of net business income; 12.4% SS (capped at the year's wage base, reduced only by the filer's *own* W-2 wages) + 2.9% Medicare (uncapped).
 - QBI deduction: 20% of net business income (after the deductible half of SE tax), capped at 20% of taxable income before the deduction, with a straight-line phase-out taper over the published income range — assumes no W-2 payroll/business property of their own (typical solo freelancer case).
-- Safe harbor target = lesser of projected total tax or 100% of prior-year tax (110% if prior-year AGI > $150k).
+- Safe harbor target = lesser of 90% of projected current-year tax or 100% of prior-year tax (110% if prior-year AGI > $150k).
 - "Already covered" = W-2 withholding (treated as paid evenly across the year) + logged estimated payments.
 - Meals are 50% deductible; mileage deduction = miles × the rate in effect on the trip date.
