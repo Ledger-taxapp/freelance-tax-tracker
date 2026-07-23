@@ -1,4 +1,4 @@
-var CACHE_NAME = 'tax-tracker-v1';
+var CACHE_NAME = 'tax-tracker-v2';
 var CORE_ASSETS = [
   './',
   './index.html',
@@ -26,10 +26,29 @@ self.addEventListener('activate', function (event) {
   );
 });
 
-// Stale-while-revalidate: serve from cache immediately when available,
-// and refresh the cache from the network in the background either way.
 self.addEventListener('fetch', function (event) {
   if (event.request.method !== 'GET') return;
+
+  // The app's own HTML pages: always try the network first, so a visitor
+  // who's online gets whatever was most recently published rather than a
+  // cached copy that could be showing stale numbers. Cache is the fallback
+  // for when they're offline, not the default.
+  var isPage = event.request.mode === 'navigate' || event.request.destination === 'document';
+  if (isPage) {
+    event.respondWith(
+      fetch(event.request).then(function (response) {
+        if (response && response.status === 200) {
+          var copy = response.clone();
+          caches.open(CACHE_NAME).then(function (cache) { cache.put(event.request, copy); });
+        }
+        return response;
+      }).catch(function () { return caches.match(event.request); })
+    );
+    return;
+  }
+
+  // Everything else (icons, manifest): stale-while-revalidate — serve from
+  // cache immediately when available, and refresh it in the background.
   event.respondWith(
     caches.match(event.request).then(function (cached) {
       var networkFetch = fetch(event.request).then(function (response) {
