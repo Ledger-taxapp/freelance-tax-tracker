@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -72,6 +72,26 @@
     margin-bottom: 1.75rem;
     line-height: 1.4;
   }
+  .install-banner {
+    position: relative;
+    background: var(--mileage-bg);
+    border: 1px solid #C9D6E2;
+    padding: 12px 34px 12px 14px;
+    border-radius: 8px;
+    margin-bottom: 1.75rem;
+  }
+  .install-banner-row { display: flex; gap: 10px; align-items: flex-start; }
+  .install-banner-icon { font-size: 19px; line-height: 1.3; flex-shrink: 0; }
+  .install-banner-title { font-weight: 600; color: var(--ink); margin: 0 0 3px; font-size: 13px; }
+  .install-banner-text { margin: 0; font-size: 12.5px; color: var(--ink-soft); line-height: 1.4; }
+  .install-banner-text strong { color: var(--ink); }
+  .install-banner .install-btn { margin-top: 8px; width: auto; padding: 7px 16px; font-size: 13px; }
+  .install-banner-close {
+    position: absolute; top: 6px; right: 6px;
+    background: none; border: none; cursor: pointer;
+    font-size: 18px; line-height: 1; color: var(--mileage); opacity: 0.55; padding: 6px;
+  }
+  .install-banner-close:hover { opacity: 1; }
   .field-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 1.5rem; }
   .field { flex: 1; min-width: 140px; }
   label { display: flex; align-items: flex-end; font-size: 12px; color: var(--ink-soft); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.04em; line-height: 1.3; min-height: 2.6em; }
@@ -439,6 +459,22 @@
   <div class="disclaimer">This is an estimate to help you plan, not official tax advice. Consult with a CPA or tax professional before filing or submitting any payments to the IRS.</div>
   <div class="disclaimer" style="background:var(--mileage-bg); border-color:#C7D6E0; color:var(--mileage);">Sample data — Marcus Reyes, a solo landscaping business, logging Jan–Jul 19 2026 for demo purposes only.</div>
 
+  <div class="install-banner" id="install-banner" style="display:none;">
+    <button class="install-banner-close" id="install-banner-close" type="button" aria-label="Dismiss">&times;</button>
+    <div class="install-banner-row">
+      <span class="install-banner-icon" aria-hidden="true">📲</span>
+      <div class="install-banner-body">
+        <p class="install-banner-title">Install Ledger on your home screen</p>
+        <p class="install-banner-text" id="install-ios" style="display:none;">In Safari, tap <strong>Share</strong> <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline; vertical-align:-2px;"><path d="M12 15V4"/><path d="M8 8l4-4 4 4"/><rect x="4" y="12" width="16" height="8" rx="2"/></svg> in the toolbar, then scroll down and tap <strong>Add to Home Screen</strong>.</p>
+        <div id="install-android" style="display:none;">
+          <p class="install-banner-text" id="install-android-fallback">In Chrome, tap the <strong>⋮</strong> menu, then <strong>Add to Home screen</strong> (or <strong>Install app</strong>).</p>
+          <button class="install-btn" id="install-android-btn" type="button" style="display:none;">Install app</button>
+        </div>
+        <p class="install-banner-text" id="install-other" style="display:none;">Look for an install icon in your browser's address bar, or check your browser's menu for "Install" or "Add to Home Screen."</p>
+      </div>
+    </div>
+  </div>
+
   <div id="view-ledger">
   <div class="card">
     <h2>Your details</h2>
@@ -525,7 +561,7 @@
           </select>
         </div>
       </div>
-      <div class="checkbox-row" id="meal-row" style="display:none;">
+      <div class="checkbox-row" id="meal-row" style="display:none; margin-top: 10px;">
         <input type="checkbox" id="entry-meal" />
         <label for="entry-meal" style="margin:0; text-transform:none; letter-spacing:normal; color:var(--ink);">Meal — only 50% is deductible</label>
       </div>
@@ -665,20 +701,6 @@
   </div>
 
   <div id="view-terms" style="display:none;">
-    <div class="card" id="install-card">
-      <h2>Install as an app</h2>
-      <p class="helper-note" style="margin-top:0;">Add this to your home screen for one-tap access, even offline — it still works exactly the same, just without the browser address bar around it.</p>
-      <div id="install-ios" style="display:none;">
-        <p class="helper-note" style="margin-bottom:0;">In Safari, tap <strong>Share</strong> <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline; vertical-align:-3px;"><path d="M12 15V4"/><path d="M8 8l4-4 4 4"/><rect x="4" y="12" width="16" height="8" rx="2"/></svg> in the toolbar, then scroll down and tap <strong>Add to Home Screen</strong>.</p>
-      </div>
-      <div id="install-android" style="display:none;">
-        <button class="install-btn" id="install-android-btn" type="button" style="display:none;">Install app</button>
-        <p class="helper-note" id="install-android-fallback" style="margin-bottom:0;">In Chrome, tap the <strong>⋮</strong> menu, then <strong>Add to Home screen</strong> (or <strong>Install app</strong>).</p>
-      </div>
-      <div id="install-other" style="display:none;">
-        <p class="helper-note" style="margin-bottom:0;">Look for an install icon in your browser's address bar, or check your browser's menu for "Install" or "Add to Home Screen."</p>
-      </div>
-    </div>
     <div class="card">
       <h2>Glossary</h2>
       <div class="glossary-body" id="glossary-body">
@@ -779,21 +801,27 @@
   </div>
 
   <div id="view-feedback" style="display:none;">
-    <div class="card">
-      <h2>Feedback</h2>
-      <p class="helper-note" style="margin-top:0;">Bug reports, feature requests, or just a thought — all welcome. This is the only information you enter anywhere in this app that ever leaves your device; everything else always stays local, always.</p>
+    <div class="card" id="feedback-card">
+      <h2>Your input matters</h2>
+      <p class="helper-note" style="margin-top:0;">Bug reports, feature requests, or just a thought — all are welcome. This is the only information you enter in the app that ever leaves your device. Everything else stays local, no exceptions.</p>
       <form id="feedback-form" action="https://formspree.io/f/mlgqwayy" method="POST">
         <div class="field" style="margin-bottom: 10px;">
-          <label for="feedback-email">Your email (optional, if you'd like a reply)</label>
+          <label for="feedback-email" style="text-transform:none; letter-spacing:normal; font-size:13px;">Your email (optional, if you'd like a reply)</label>
           <input type="email" id="feedback-email" name="email" placeholder="you@example.com" />
         </div>
         <div class="field" style="margin-bottom: 10px;">
-          <label for="feedback-message">Your feedback</label>
+          <label for="feedback-message" style="text-transform:none; letter-spacing:normal; font-size:13px;">Your feedback</label>
           <textarea id="feedback-message" name="message" rows="6" placeholder="What's on your mind?" required></textarea>
         </div>
         <button class="install-btn" type="submit" id="feedback-submit-btn" style="width:100%;">Send feedback</button>
         <p class="helper-note" id="feedback-status" style="display:none; margin: 10px 0 0;"></p>
       </form>
+      <div id="feedback-success" style="display:none; text-align:center; padding: 10px 6px 4px;">
+        <div style="font-size:34px; line-height:1; margin-bottom:10px;">💌</div>
+        <p style="font-family:'Fraunces', serif; font-weight:600; font-size:18px; margin:0 0 6px; color:var(--ink);">Thanks for the feedback!</p>
+        <p class="helper-note" style="margin:0 0 18px;">We're already using it to improve Ledger.</p>
+        <button class="btn-text" id="feedback-send-another-btn" type="button">Send another message</button>
+      </div>
     </div>
   </div>
 
@@ -2410,6 +2438,10 @@
     return '$' + Math.round(n).toLocaleString('en-US');
   }
 
+  function fmtCents(n) {
+    return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
   // Currency-formats a dollar input field's displayed value (e.g. "60000" -> "$60,000").
   // Only touches what's shown on screen — the underlying state stays a plain number string.
   // Pass withCents:true for fields logging an exact transaction (e.g. entry amount),
@@ -2671,7 +2703,7 @@
           '<button class="btn-text" data-confirm-no="1" type="button">No</button></div>';
       } else {
         var sign = e.type === 'income' ? '+' : (e.type === 'payment' ? '✓ ' : '−');
-        rightHtml = '<div style="display:flex; align-items:center;"><span class="ledger-amt ' + e.type + '">' + sign + fmt(e.amount) + '</span>' +
+        rightHtml = '<div style="display:flex; align-items:center;"><span class="ledger-amt ' + e.type + '">' + sign + fmtCents(e.amount) + '</span>' +
           '<button class="ledger-del" data-id="' + e.id + '" aria-label="Delete entry">×</button></div>';
       }
 
@@ -3565,6 +3597,8 @@
     var feedbackForm = document.getElementById('feedback-form');
     var feedbackStatus = document.getElementById('feedback-status');
     var feedbackSubmitBtn = document.getElementById('feedback-submit-btn');
+    var feedbackSuccess = document.getElementById('feedback-success');
+    var feedbackSendAnotherBtn = document.getElementById('feedback-send-another-btn');
     feedbackForm.addEventListener('submit', function (evt) {
       evt.preventDefault();
       feedbackSubmitBtn.disabled = true;
@@ -3578,13 +3612,13 @@
       }).then(function (response) {
         if (response.ok) {
           feedbackForm.reset();
-          feedbackStatus.textContent = 'Thanks — your feedback was sent.';
-          feedbackStatus.style.color = 'var(--income)';
+          feedbackForm.style.display = 'none';
+          feedbackSuccess.style.display = 'block';
         } else {
           feedbackStatus.textContent = 'Something went wrong — please try again in a moment.';
           feedbackStatus.style.color = 'var(--expense)';
+          feedbackStatus.style.display = 'block';
         }
-        feedbackStatus.style.display = 'block';
       }).catch(function () {
         feedbackStatus.textContent = 'Something went wrong — please check your connection and try again.';
         feedbackStatus.style.color = 'var(--expense)';
@@ -3593,6 +3627,10 @@
         feedbackSubmitBtn.disabled = false;
         feedbackSubmitBtn.textContent = 'Send feedback';
       });
+    });
+    feedbackSendAnotherBtn.addEventListener('click', function () {
+      feedbackSuccess.style.display = 'none';
+      feedbackForm.style.display = 'block';
     });
   })();
 
@@ -3605,6 +3643,9 @@
   (function () {
     var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     var isAndroid = /Android/.test(navigator.userAgent);
+    var isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+    var installBannerEl = document.getElementById('install-banner');
+    var installBannerCloseBtn = document.getElementById('install-banner-close');
     var installIosEl = document.getElementById('install-ios');
     var installAndroidEl = document.getElementById('install-android');
     var installOtherEl = document.getElementById('install-other');
@@ -3612,13 +3653,24 @@
     var installAndroidFallback = document.getElementById('install-android-fallback');
     var deferredInstallPrompt = null;
 
-    if (isIOS) {
-      installIosEl.style.display = 'block';
-    } else if (isAndroid) {
-      installAndroidEl.style.display = 'block';
-    } else {
-      installOtherEl.style.display = 'block';
+    if (!isStandalone) {
+      installBannerEl.style.display = 'block';
+      if (isIOS) {
+        installIosEl.style.display = 'block';
+      } else if (isAndroid) {
+        installAndroidEl.style.display = 'block';
+      } else {
+        installOtherEl.style.display = 'block';
+      }
     }
+
+    installBannerCloseBtn.addEventListener('click', function () {
+      installBannerEl.style.display = 'none';
+    });
+
+    window.addEventListener('appinstalled', function () {
+      installBannerEl.style.display = 'none';
+    });
 
     window.addEventListener('beforeinstallprompt', function (evt) {
       evt.preventDefault();
