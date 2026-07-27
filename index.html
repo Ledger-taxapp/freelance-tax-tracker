@@ -479,7 +479,7 @@
     <h2>Your details</h2>
     <div class="field-row" style="margin-bottom: 10px;">
       <div class="field">
-        <label for="status">Filing status</label>
+        <label for="status" style="min-height:0;">Filing status</label>
         <select id="status">
           <option value="single">Single</option>
           <option value="mfj">Married filing jointly</option>
@@ -1012,6 +1012,28 @@
     return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
+  // For narrow stat tiles only, where a 7+ digit number would otherwise get
+  // clipped to "..." — abbreviates to millions so the figure stays readable.
+  function fmtStat(n) {
+    if (Math.abs(n) >= 1000000) {
+      return '$' + (n / 1000000).toFixed(2) + 'M';
+    }
+    return fmt(n);
+  }
+
+  // For the narrower 3-column dashboard tiles, which run out of room earlier
+  // than the 2-column stat tiles — abbreviates starting at $10,000 (K), then M.
+  function fmtStatTight(n) {
+    var abs = Math.abs(n);
+    if (abs >= 1000000) {
+      return '$' + (n / 1000000).toFixed(1) + 'M';
+    }
+    if (abs >= 10000) {
+      return '$' + (n / 1000).toFixed(1) + 'K';
+    }
+    return fmt(n);
+  }
+
   // Currency-formats a dollar input field's displayed value (e.g. "60000" -> "$60,000").
   // Only touches what's shown on screen — the underlying state stays a plain number string.
   // Pass withCents:true for fields logging an exact transaction (e.g. entry amount),
@@ -1331,13 +1353,13 @@
 
   function renderStats() {
     var t = calcTotals(state.selectedYear);
-    document.getElementById('qbi-deduction').textContent = fmt(t.qbiDeduction);
-    document.getElementById('se-tax').textContent = fmt(t.seTax);
-    document.getElementById('addl-medicare').textContent = fmt(t.addlMedicareTax);
-    document.getElementById('fed-tax').textContent = fmt(t.fedTax);
+    document.getElementById('qbi-deduction').textContent = fmtStat(t.qbiDeduction);
+    document.getElementById('se-tax').textContent = fmtStat(t.seTax);
+    document.getElementById('addl-medicare').textContent = fmtStat(t.addlMedicareTax);
+    document.getElementById('fed-tax').textContent = fmtStat(t.fedTax);
     document.getElementById('total-tax').textContent = fmt(t.total);
-    document.getElementById('safe-harbor').textContent = t.safeHarborTarget != null ? fmt(t.safeHarborTarget) : 'Not set';
-    document.getElementById('paid-so-far').textContent = fmt(t.covered);
+    document.getElementById('safe-harbor').textContent = t.safeHarborTarget != null ? fmtStat(t.safeHarborTarget) : 'Not set';
+    document.getElementById('paid-so-far').textContent = fmtStat(t.covered);
     document.getElementById('next-payment').textContent = fmt(t.nextPayment);
     document.getElementById('next-payment-label').textContent = t.remainingQuarters === 0 ? 'Amount still owed' : 'Suggested next payment';
 
@@ -1531,9 +1553,9 @@
     var payments = entriesForYear(year).reduce(function (sum, e) { return e.type === 'payment' ? sum + e.amount : sum; }, 0);
     el.innerHTML =
       '<div class="stat-grid cols-3">' +
-      '<div class="stat"><div class="stat-label">Total earnings</div><div class="stat-value">' + fmt(t.income) + '</div></div>' +
-      '<div class="stat"><div class="stat-label">Total expenses</div><div class="stat-value">' + fmt(t.expensesRaw) + '</div></div>' +
-      '<div class="stat"><div class="stat-label">Payments sent</div><div class="stat-value">' + fmt(payments) + '</div></div>' +
+      '<div class="stat"><div class="stat-label">Total earnings</div><div class="stat-value">' + fmtStatTight(t.income) + '</div></div>' +
+      '<div class="stat"><div class="stat-label">Total expenses</div><div class="stat-value">' + fmtStatTight(t.expensesRaw) + '</div></div>' +
+      '<div class="stat"><div class="stat-label">Payments sent</div><div class="stat-value">' + fmtStatTight(payments) + '</div></div>' +
       '</div>';
   }
 
