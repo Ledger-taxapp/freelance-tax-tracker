@@ -510,7 +510,7 @@
       </div>
       <div class="field-row" style="margin-bottom: 0;">
         <div class="field">
-          <label for="w2-withholding">W-2 withholding this year<button class="info-btn" type="button" data-term="w2-withholding">?</button></label>
+          <label for="w2-withholding">Federal tax withheld this year<button class="info-btn" type="button" data-term="w2-withholding">?</button></label>
           <input type="text" inputmode="decimal" id="w2-withholding" placeholder="0" />
         </div>
       </div>
@@ -752,7 +752,7 @@
 
       <details class="term" id="term-w2-wages">
         <summary>W-2 wages</summary>
-        <p>If you also have a W-2 job alongside your freelance work, this matters more than it might seem. Social Security tax is only collected up to a yearly earnings cap, and it's based on your own earnings record — not your household's. Telling this tool about your own W-2 wages means it won't overcharge you on the Social Security portion of your self-employment tax.</p>
+        <p>If you also have a W-2 job alongside your freelance work, this matters more than it might seem. Enter your <strong>gross</strong> pay for the year, the amount before any taxes are withheld, not your take-home pay. If you're only partway through the year, use the year-to-date gross earnings figure from your most recent pay stub. Social Security tax is only collected up to a yearly earnings cap, and it's based on your own earnings record — not your household's. Telling this tool about your own W-2 wages means it won't overcharge you on the Social Security portion of your self-employment tax.</p>
       </details>
 
       <details class="term" id="term-w2-wages-spouse">
@@ -761,13 +761,13 @@
       </details>
 
       <details class="term" id="term-w2-withholding">
-        <summary>W-2 withholding</summary>
-        <p>Every paycheck from a W-2 job already has federal tax withheld and sent to the IRS automatically — the IRS treats that money as if it were paid evenly across the whole year, no matter when it was actually withheld. This tool counts that withholding toward what you owe, alongside any estimated payments you've logged, so it doesn't ask you to pay twice on income your employer is already covering. You can usually find a running total on your pay stub, or estimate it from your most recent one.</p>
+        <summary>Federal tax withheld</summary>
+        <p>A W-2 paycheck usually has several different things withheld at once, federal income tax, Social Security, Medicare, and often state tax too. This field wants <strong>only the federal income tax portion</strong>. Leave out Social Security, Medicare, and any state withholding (this tool doesn't model state tax at all, so including it would make your "already covered" amount look bigger than it really is for IRS purposes). On a pay stub, look for a line labeled something like "Federal Income Tax" or "Fed W/H" and use that year-to-date total; on a full year-end W-2, it's Box 2. The IRS treats this withholding as if it were paid evenly across the whole year, no matter when it was actually withheld, and this tool counts it toward what you owe alongside any estimated payments you've logged, so it doesn't ask you to pay twice on income your employer is already covering.</p>
       </details>
 
       <details class="term" id="term-already-covered">
         <summary>Already covered</summary>
-        <p>This adds together two different things: any W-2 withholding you've told this tool about, plus any estimated payments you've logged in the ledger. Together, they're what's already chipping away at your tax bill — the "Suggested next payment" is just what's left after subtracting this from your target.</p>
+        <p>This adds together two different things: the federal tax withheld from your paycheck that you've told this tool about, plus any estimated payments you've logged in the ledger. Together, they're what's already chipping away at your tax bill — the "Suggested next payment" is just what's left after subtracting this from your target.</p>
       </details>
 
       <details class="term" id="term-effective-rate">
@@ -1395,7 +1395,7 @@
       '<li><strong>Meals:</strong> only 50% of a meal expense counts as deductible.</li>' +
       '<li><strong>Mileage:</strong> IRS standard mileage rate, applied by the date of each trip (2026 changed mid-year: 72.5¢/mi through June, 76¢/mi from July 1).</li>' +
       '<li><strong>Safe harbor:</strong> target is the lesser of 90% of your projected total tax or 100% of last year\'s tax (110% if last year\'s AGI was over $150,000).</li>' +
-      '<li><strong>Already covered:</strong> your W-2 withholding (treated as paid evenly across the year, same as the IRS treats it) plus any estimated payments you\'ve logged, subtracted from your target to get the suggested next payment.</li>' +
+      '<li><strong>Already covered:</strong> your federal tax withheld (treated as paid evenly across the year, same as the IRS treats it) plus any estimated payments you\'ve logged, subtracted from your target to get the suggested next payment.</li>' +
       '</ul>' +
       '<p style="margin:0;">This is a simplified estimator — it doesn\'t include state tax, itemized deductions, retirement contributions, or health insurance deductions. Numbers are estimates for planning, not a substitute for a tax professional.</p>';
   }
@@ -1776,7 +1776,7 @@
     rows.push(['Additional Medicare tax', t.addlMedicareTax.toFixed(2)]);
     rows.push(['Federal income tax', t.fedTax.toFixed(2)]);
     rows.push(['Total projected tax', t.total.toFixed(2)]);
-    rows.push(['W-2 withholding', t.w2Withholding.toFixed(2)]);
+    rows.push(['Federal tax withheld', t.w2Withholding.toFixed(2)]);
     rows.push(['Estimated payments made', t.paidEstimated.toFixed(2)]);
     rows.push(['Total already covered', t.covered.toFixed(2)]);
     rows.push(['Safe harbor target', t.safeHarborTarget != null ? t.safeHarborTarget.toFixed(2) : 'not set']);
@@ -1962,10 +1962,10 @@
     'safe-harbor': { title: 'Safe harbor', summary: 'The minimum you need to pay throughout the year to avoid an underpayment penalty.' },
     'quarterly': { title: 'Quarterly estimated payments', summary: 'Four smaller payments spread across the year instead of one lump sum in April.' },
     'mileage-rate': { title: 'Standard mileage rate', summary: 'A flat per-mile rate the IRS lets you deduct instead of tracking actual vehicle costs.' },
-    'w2-wages': { title: 'W-2 wages', summary: 'Your own W-2 earnings — used to figure out how much room is left under your Social Security cap.' },
+    'w2-wages': { title: 'W-2 wages', summary: 'Your gross W-2 pay this year, before any taxes are withheld — used to figure out how much room is left under your Social Security cap.' },
     'w2-wages-spouse': { title: 'Spouse\'s W-2 wages', summary: 'Counted in your household income for tax brackets, but never affects your own Social Security cap.' },
-    'w2-withholding': { title: 'W-2 withholding', summary: 'Tax already being sent to the IRS from your paycheck — counted toward what you still owe.' },
-    'already-covered': { title: 'Already covered', summary: 'Your W-2 withholding plus any estimated payments you\'ve logged — money already chipping away at your bill.' },
+    'w2-withholding': { title: 'Federal tax withheld', summary: 'Only the federal income tax withheld from your paychecks — not Social Security, Medicare, or state tax.' },
+    'already-covered': { title: 'Already covered', summary: 'Your federal tax withheld plus any estimated payments you\'ve logged — money already chipping away at your bill.' },
     'effective-rate': { title: 'Effective tax rate', summary: 'Total projected tax divided by your net business income — roughly what share of what you kept goes to taxes.' }
   };
 
