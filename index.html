@@ -179,6 +179,12 @@
     width: 16px; height: 16px; margin: 0; padding: 0; border: 1px solid var(--line); background: var(--paper-raised); accent-color: var(--ink); flex-shrink: 0;
   }
   .helper-note { font-size: 12px; color: var(--ink-soft); margin-bottom: 10px; line-height: 1.45; }
+  .truncatable-toggle {
+    background: none; border: none; padding: 0; margin-left: 2px;
+    color: var(--warn); font-weight: 600; font-size: 12px; font-family: inherit;
+    cursor: pointer; white-space: nowrap;
+  }
+  .truncatable-toggle:hover { text-decoration: underline; }
   .warning-note { font-size: 12px; color: var(--warn); margin: -4px 0 10px; line-height: 1.4; }
 
   .ledger { margin-top: 1.25rem; border-top: 1px solid var(--line); }
@@ -384,6 +390,11 @@
   .welcome-card p { font-size: 14px; color: var(--ink-soft); line-height: 1.6; margin: 0 0 0.9rem; }
   .welcome-card p strong { color: var(--ink); }
   .tos-link { color: #2A5DB0; text-decoration: underline; cursor: pointer; }
+  .confirm-card-goback {
+    display: block; margin: 0 auto; background: none; border: none;
+    color: var(--ink); text-decoration: underline; font-size: 13px;
+    cursor: pointer; font-family: inherit;
+  }
 
   .chart-shape { cursor: pointer; }
   .month-bar {
@@ -514,7 +525,7 @@
           <input type="text" inputmode="decimal" id="w2-withholding" placeholder="0" />
         </div>
       </div>
-      <p class="helper-note" style="margin: 10px 0 0;">Entering both means your total tax estimate already accounts for what your employer withholds — so the "suggested payment" below reflects only what's left, not double-counted.</p>
+      <p class="helper-note truncatable" style="margin: 10px 0 0;">Entering both means your total tax estimate already accounts for what your employer withholds — so the "suggested payment" below reflects only what's left, not double-counted.</p>
     </div>
     <div id="year-note" class="year-note" style="display:none; margin-top: 0.9rem;"></div>
   </div>
@@ -622,10 +633,11 @@
         <div class="stat-value" id="fed-tax">$0</div>
       </div>
       <div class="stat" style="grid-column: span 2;">
-        <div class="stat-label">Total projected tax</div>
+        <div class="stat-label">Total projected tax<button class="info-btn" type="button" data-term="total-projected-tax">?</button></div>
         <div class="stat-value" id="total-tax">$0</div>
       </div>
     </div>
+    <p class="helper-note truncatable" style="margin-top: 0.9rem; margin-bottom: 0;">This is your full year's federal tax bill, on your combined W-2 and business income, not an extra amount on top of what's already been withheld. If you have W-2 withholding, it's already chipping away at this. What you'd actually still need to set aside is "Suggested next payment" in "Payments &amp; safe harbor" below.</p>
     <p class="helper-note" id="loss-note" style="display:none; margin-top: 0.9rem; margin-bottom: 0;"></p>
   </div>
 
@@ -634,11 +646,11 @@
     <p class="helper-note">Enter last year's numbers to see the minimum you need to pay this year to avoid an underpayment penalty — often lower than your full projected tax.</p>
     <div class="field-row">
       <div class="field">
-        <label for="prior-tax">Prior year total tax</label>
+        <label for="prior-tax">Prior year total tax<button class="info-btn" type="button" data-term="prior-tax">?</button></label>
         <input type="text" inputmode="decimal" id="prior-tax" placeholder="0" />
       </div>
       <div class="field">
-        <label for="prior-agi">Prior year AGI</label>
+        <label for="prior-agi">Prior year AGI<button class="info-btn" type="button" data-term="prior-agi">?</button></label>
         <input type="text" inputmode="decimal" id="prior-agi" placeholder="0" />
       </div>
     </div>
@@ -705,6 +717,11 @@
       <div class="glossary-body" id="glossary-body">
       <p class="helper-note" style="margin-top: 0;">New to being your own boss? Or a seasoned pro double-checking a detail? Either way, here's what these terms actually mean — plain and simple.</p>
 
+      <details class="term" id="term-total-projected-tax">
+        <summary>Total projected tax</summary>
+        <p>This is your estimated federal tax bill for the whole year, combining self-employment tax, federal income tax on your combined income (your W-2 wages plus your business profit), and any Additional Medicare Tax. It's not an extra amount stacked on top of what's already been withheld from your paycheck, it's your entire year's total. If you have a W-2 job, some or all of it may already be getting paid automatically through your employer's withholding. The "Suggested next payment" figure in "Payments &amp; safe harbor" accounts for that withholding (and any estimated payments you've logged) and tells you what, if anything, you still need to set aside yourself.</p>
+      </details>
+
       <details class="term" id="term-se-tax">
         <summary>Self-employment tax</summary>
         <p>When you work for an employer, they automatically cover half of your Social Security and Medicare taxes before you ever see your paycheck. When you work for yourself, there's no employer to split that with — so self-employment tax simply combines both halves into one tax you pay directly. It isn't an extra penalty for being your own boss; it's the same tax everyone pays, just landing entirely on your side.</p>
@@ -728,6 +745,16 @@
       <details class="term" id="term-safe-harbor">
         <summary>Safe harbor</summary>
         <p>The IRS wants your taxes paid gradually throughout the year, not all at once in April. Safe harbor is the rule that protects you from a penalty as long as you pay at least a certain amount along the way — usually the lower of either 100% of what you owed last year, or 90% of what you'll owe this year. If you're not sure yet, it's completely fine to leave this blank and come back to it later.</p>
+      </details>
+
+      <details class="term" id="term-prior-tax">
+        <summary>Prior year total tax</summary>
+        <p>This is your total federal tax bill from last year's return, sometimes labeled "total tax" on Form 1040. It's one of the two numbers safe harbor compares against: paying at least 100% of this amount throughout this year (110% if your prior-year AGI was over $150,000) is one way to avoid an underpayment penalty, regardless of what you end up actually owing this year.</p>
+      </details>
+
+      <details class="term" id="term-prior-agi">
+        <summary>Prior year AGI</summary>
+        <p>This is your Adjusted Gross Income from last year's tax return, found near the bottom of the first page of last year's Form 1040. This tool only uses it for one thing: checking whether it was over $150,000, which raises the safe harbor requirement from 100% to 110% of last year's tax.</p>
       </details>
 
       <details class="term" id="term-quarterly">
@@ -794,7 +821,7 @@
         <p><strong>9. Intellectual property.</strong> The design, code, and content of this app belong to its creator(s) and are protected by applicable copyright law. Don't copy, redistribute, or create derivative works from it without permission.</p>
         <p><strong>10. Changes.</strong> We may update this app or these Terms at any time. Continuing to use the app after a change means you accept the updated Terms.</p>
         <p><strong>11. Governing law.</strong> These Terms are governed by the laws of the Commonwealth of Virginia, without regard to its conflict-of-law principles.</p>
-        <p style="margin-bottom:0;"><strong>12. Questions.</strong> Questions or feedback are always welcome — <button class="btn-text" type="button" id="tos-feedback-btn">go to the Feedback tab</button>.</p>
+        <p style="margin-bottom:0;"><strong>12. Questions.</strong> Questions or feedback are always welcome — <button class="btn-text" type="button" id="tos-feedback-btn">go to the Contact tab</button>.</p>
       </div>
     </details>
   </div>
@@ -802,14 +829,22 @@
   <div id="view-feedback" style="display:none;">
     <div class="card" id="feedback-card">
       <h2>Your input matters</h2>
-      <p class="helper-note" style="margin-top:0;">Bug reports, feature requests, or just a thought — all are welcome. This is the only information you enter in the app that ever leaves your device. Everything else stays local, no exceptions.</p>
+      <p class="helper-note" style="margin-top:0;">This is the only information you enter anywhere in this app that ever leaves your device. Everything else always stays local, no exceptions.</p>
       <form id="feedback-form" action="https://formspree.io/f/mlgqwayy" method="POST">
         <div class="field" style="margin-bottom: 10px;">
-          <label for="feedback-email" style="text-transform:none; letter-spacing:normal; font-size:13px;">Your email (optional, if you'd like a reply)</label>
+          <label for="feedback-category" style="text-transform:none; letter-spacing:normal; font-size:13px;">What's this about?</label>
+          <select id="feedback-category" name="category">
+            <option value="feedback">Feedback</option>
+            <option value="question">Question</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="field" style="margin-bottom: 10px;">
+          <label for="feedback-email" id="feedback-email-label" style="text-transform:none; letter-spacing:normal; font-size:13px;">Your email (optional, if you'd like a reply)</label>
           <input type="email" id="feedback-email" name="email" placeholder="you@example.com" />
         </div>
         <div class="field" style="margin-bottom: 10px;">
-          <label for="feedback-message" style="text-transform:none; letter-spacing:normal; font-size:13px;">Your feedback</label>
+          <label for="feedback-message" id="feedback-message-label" style="text-transform:none; letter-spacing:normal; font-size:13px;">Your feedback</label>
           <textarea id="feedback-message" name="message" rows="6" placeholder="What's on your mind?" required></textarea>
         </div>
         <button class="install-btn" type="submit" id="feedback-submit-btn" style="width:100%;">Send feedback</button>
@@ -851,13 +886,22 @@
       <p><strong>It's free, private, and fully local.</strong></p>
       <p>Everything you enter stays on your device. We don't see it, store it, or send it anywhere.</p>
       <p><strong>We're just getting started.</strong></p>
-      <p>New features are coming fast, and your feedback shapes what we build next. Share your thoughts anytime from the Feedback tab.</p>
+      <p>New features are coming fast, and your feedback shapes what we build next. Reach out anytime from the Contact tab.</p>
       <div class="checkbox-row" style="margin: 0 0 10px; align-items: flex-start;">
         <input type="checkbox" id="welcome-agree-checkbox" style="margin-top: 2px;" />
         <label for="welcome-agree-checkbox" style="margin:0; text-transform:none; letter-spacing:normal; color:var(--ink); font-size:13px; line-height:1.5;">I understand this is an estimate, not tax advice, and I agree to the <a href="#" id="welcome-tos-toggle" class="tos-link">Terms of Service</a> (also in the Terms tab).</label>
       </div>
       <div id="welcome-tos-slot" style="display:none; max-height:220px; overflow-y:auto; border:1px solid var(--line); border-radius:8px; padding:10px 12px; margin:0 0 14px; background:var(--paper);"></div>
       <button class="install-btn" id="welcome-dismiss-btn" type="button" style="width:100%; margin-bottom:0;" disabled>Get started</button>
+    </div>
+  </div>
+
+  <div class="welcome-overlay" id="feedback-noemail-overlay" style="display:none;">
+    <div class="welcome-card" style="text-align:center;">
+      <h2>Just checking…</h2>
+      <p style="text-align:left;">We noticed you didn't leave us your email. We read every submission, we just want to make sure we can respond to yours. Click "Send anyway" below if you're okay with not hearing back directly.</p>
+      <button class="install-btn" type="button" id="feedback-send-anyway-btn" style="width:100%; margin-bottom:14px;">Send anyway</button>
+      <button class="confirm-card-goback" type="button" id="feedback-go-back-btn">Go back</button>
     </div>
   </div>
 </div>
@@ -877,7 +921,7 @@
   </button>
   <button class="nav-btn" id="nav-feedback" type="button" data-view="feedback">
     <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H8l-4 4V5z"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="13" y2="13"/></svg>
-    <span>Feedback</span>
+    <span>Contact</span>
   </button>
 </nav>
 
@@ -1698,6 +1742,7 @@
     spouseW2FieldEl.style.display = isMfj ? 'block' : 'none';
     w2LabelEl.childNodes[0].nodeValue = isMfj ? 'Your W-2 wages this year' : 'W-2 wages this year';
     w2FieldsBlockEl.style.display = state.hasW2 ? 'block' : 'none';
+    if (state.hasW2) wireTruncatableNotes();
   }
 
   function renderAll() {
@@ -1955,11 +2000,14 @@
   });
 
   var GLOSSARY_SUMMARIES = {
+    'total-projected-tax': { title: 'Total projected tax', summary: 'Your full year\'s federal tax bill, before subtracting withholding or payments already made — see "Suggested next payment" for what\'s actually left.' },
     'se-tax': { title: 'Self-employment tax', summary: 'Covers both the employee and employer share of Social Security and Medicare, since there\'s no employer here to split it with you.' },
     'qbi': { title: 'QBI deduction', summary: 'Deduct 20% of your net business profit before federal tax — automatic below about $201,775 (single) / $403,550 (joint), then it tapers off.' },
     'fed-tax': { title: 'Federal income tax', summary: 'Tax on your income after deductions, using brackets — only your top slice of income is taxed at your highest rate.' },
     'addl-medicare': { title: 'Additional Medicare tax', summary: 'An extra 0.9% once your income passes $200,000 (single/HOH) or $250,000 (joint).' },
     'safe-harbor': { title: 'Safe harbor', summary: 'The minimum you need to pay throughout the year to avoid an underpayment penalty.' },
+    'prior-tax': { title: 'Prior year total tax', summary: 'Last year\'s total federal tax bill, from last year\'s return — half of what your safe harbor target is based on.' },
+    'prior-agi': { title: 'Prior year AGI', summary: 'Last year\'s adjusted gross income — only used to check whether the higher 110% safe harbor threshold applies.' },
     'quarterly': { title: 'Quarterly estimated payments', summary: 'Four smaller payments spread across the year instead of one lump sum in April.' },
     'mileage-rate': { title: 'Standard mileage rate', summary: 'A flat per-mile rate the IRS lets you deduct instead of tracking actual vehicle costs.' },
     'w2-wages': { title: 'W-2 wages', summary: 'Your gross W-2 pay this year, before any taxes are withheld — used to figure out how much room is left under your Social Security cap.' },
@@ -2064,6 +2112,63 @@
 
   document.querySelectorAll('.info-btn').forEach(wireInfoButton);
 
+  // Clips a helper-note to one line with a real "…" right after the last
+  // visible word, followed by a "Show more" / "Show less" toggle. Runs again
+  // (harmlessly, via the wired-flag) any time a previously-hidden note becomes
+  // visible, since a 0-width container can't be measured.
+  function wireTruncatableNotes() {
+    document.querySelectorAll('.helper-note.truncatable').forEach(function (note) {
+      if (note.dataset.truncateWired) return;
+      if (note.clientWidth === 0) return;
+
+      var fullText = note.textContent.trim();
+      note.textContent = '';
+      var textSpan = document.createElement('span');
+      note.appendChild(textSpan);
+      note.appendChild(document.createTextNode(' '));
+      var toggleBtn = document.createElement('button');
+      toggleBtn.type = 'button';
+      toggleBtn.className = 'truncatable-toggle';
+      note.appendChild(toggleBtn);
+
+      var singleLineMax = (parseFloat(getComputedStyle(note).lineHeight) || 17) + 1;
+
+      textSpan.textContent = fullText;
+      toggleBtn.style.display = 'none';
+      if (note.scrollHeight <= singleLineMax) {
+        note.dataset.truncateWired = '1';
+        return;
+      }
+
+      toggleBtn.style.display = '';
+      toggleBtn.textContent = 'Show more';
+
+      var lo = 0, hi = fullText.length, best = 0;
+      while (lo <= hi) {
+        var mid = (lo + hi) >> 1;
+        textSpan.textContent = fullText.slice(0, mid).replace(/\s+$/, '') + '…';
+        if (note.scrollHeight <= singleLineMax) {
+          best = mid;
+          lo = mid + 1;
+        } else {
+          hi = mid - 1;
+        }
+      }
+      var truncated = fullText.slice(0, best).replace(/\s+$/, '') + '…';
+      textSpan.textContent = truncated;
+
+      var expanded = false;
+      toggleBtn.addEventListener('click', function () {
+        expanded = !expanded;
+        textSpan.textContent = expanded ? fullText : truncated;
+        toggleBtn.textContent = expanded ? 'Show less' : 'Show more';
+      });
+
+      note.dataset.truncateWired = '1';
+    });
+  }
+  wireTruncatableNotes();
+
   function setActiveChartShape(el) {
     if (activeChartShapeEl && activeChartShapeEl !== el) activeChartShapeEl.classList.remove('chart-shape-active');
     activeChartShapeEl = el;
@@ -2166,8 +2271,8 @@
       pageTitleEl.textContent = 'Tax terms, explained';
       pageSubEl.textContent = 'Plain-English definitions for the jargon used throughout this tool.';
     } else if (view === 'feedback') {
-      pageTitleEl.textContent = 'Feedback';
-      pageSubEl.textContent = 'Tell us what\'s working, what isn\'t, and what you\'d like to see next.';
+      pageTitleEl.textContent = 'Contact Us';
+      pageSubEl.textContent = 'Send feedback, ask a question, or reach out for anything else.';
     } else {
       pageTitleEl.textContent = 'Ledger';
       pageSubEl.textContent = 'A running estimate of what you owe, updated every time you log something.';
@@ -2177,6 +2282,7 @@
     activeViewEl.classList.remove('view-enter');
     void activeViewEl.offsetWidth;
     activeViewEl.classList.add('view-enter');
+    wireTruncatableNotes();
   }
 
   navLedgerBtn.addEventListener('click', function () { switchView('ledger'); });
@@ -2191,8 +2297,34 @@
     var feedbackSubmitBtn = document.getElementById('feedback-submit-btn');
     var feedbackSuccess = document.getElementById('feedback-success');
     var feedbackSendAnotherBtn = document.getElementById('feedback-send-another-btn');
-    feedbackForm.addEventListener('submit', function (evt) {
-      evt.preventDefault();
+    var feedbackCategoryEl = document.getElementById('feedback-category');
+    var feedbackEmailEl = document.getElementById('feedback-email');
+    var feedbackEmailLabelEl = document.getElementById('feedback-email-label');
+    var feedbackMessageEl = document.getElementById('feedback-message');
+    var feedbackMessageLabelEl = document.getElementById('feedback-message-label');
+    var feedbackNoEmailOverlay = document.getElementById('feedback-noemail-overlay');
+    var feedbackSendAnywayBtn = document.getElementById('feedback-send-anyway-btn');
+    var feedbackGoBackBtn = document.getElementById('feedback-go-back-btn');
+
+    var CATEGORY_CONFIG = {
+      feedback: { emailLabel: 'Your email (optional, if you\'d like a reply)', emailRequired: false, messageLabel: 'Your feedback', messagePlaceholder: 'What\'s on your mind?', submitLabel: 'Send feedback' },
+      question: { emailLabel: 'Your email', emailRequired: true, messageLabel: 'Your question', messagePlaceholder: 'What do you want to know?', submitLabel: 'Send question' },
+      other: { emailLabel: 'Your email (optional, if you\'d like a reply)', emailRequired: false, messageLabel: 'Your message', messagePlaceholder: 'Tell us what\'s up', submitLabel: 'Send message' }
+    };
+
+    function updateFeedbackCategoryUI() {
+      var cfg = CATEGORY_CONFIG[feedbackCategoryEl.value] || CATEGORY_CONFIG.feedback;
+      feedbackEmailLabelEl.textContent = cfg.emailLabel;
+      feedbackEmailEl.required = cfg.emailRequired;
+      feedbackMessageLabelEl.textContent = cfg.messageLabel;
+      feedbackMessageEl.placeholder = cfg.messagePlaceholder;
+      feedbackSubmitBtn.textContent = cfg.submitLabel;
+      feedbackNoEmailOverlay.style.display = 'none';
+    }
+    feedbackCategoryEl.addEventListener('change', updateFeedbackCategoryUI);
+    updateFeedbackCategoryUI();
+
+    function doSubmit() {
       feedbackSubmitBtn.disabled = true;
       feedbackSubmitBtn.textContent = 'Sending...';
       feedbackStatus.style.display = 'none';
@@ -2217,12 +2349,34 @@
         feedbackStatus.style.display = 'block';
       }).finally(function () {
         feedbackSubmitBtn.disabled = false;
-        feedbackSubmitBtn.textContent = 'Send feedback';
+        updateFeedbackCategoryUI();
       });
+    }
+
+    feedbackForm.addEventListener('submit', function (evt) {
+      evt.preventDefault();
+      var category = feedbackCategoryEl.value;
+      var email = feedbackEmailEl.value.trim();
+      if (category !== 'question' && !email) {
+        feedbackNoEmailOverlay.style.display = 'flex';
+        return;
+      }
+      doSubmit();
     });
+
+    feedbackSendAnywayBtn.addEventListener('click', function () {
+      feedbackNoEmailOverlay.style.display = 'none';
+      doSubmit();
+    });
+    feedbackGoBackBtn.addEventListener('click', function () {
+      feedbackNoEmailOverlay.style.display = 'none';
+      feedbackEmailEl.focus();
+    });
+
     feedbackSendAnotherBtn.addEventListener('click', function () {
       feedbackSuccess.style.display = 'none';
       feedbackForm.style.display = 'block';
+      updateFeedbackCategoryUI();
     });
   })();
 
