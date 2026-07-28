@@ -526,7 +526,7 @@
           <input type="text" inputmode="decimal" id="w2-withholding" placeholder="0" />
         </div>
       </div>
-      <p class="helper-note truncatable" style="margin: 10px 0 0;">Entering both means your total tax estimate already accounts for what your employer withholds — so the "suggested payment" below reflects only what's left, not double-counted.</p>
+      <p class="helper-note truncatable" style="margin: 10px 0 0;">Entering both means your total tax estimate already accounts for what your employer withholds — so the "Suggested next payment" below reflects only what's left, not double-counted.</p>
     </div>
     <div id="year-note" class="year-note" style="display:none; margin-top: 0.9rem;"></div>
   </div>
@@ -644,7 +644,7 @@
 
   <div class="card">
     <h2>Payments &amp; safe harbor</h2>
-    <p class="helper-note">Enter last year's numbers to see the minimum you need to pay this year to avoid an underpayment penalty — often lower than your full projected tax.</p>
+    <p class="helper-note">Enter last year's numbers to see the minimum you need to pay this year to avoid an underpayment penalty — often lower than your "Total projected tax."</p>
     <div class="field-row">
       <div class="field">
         <label for="prior-tax">Prior year total tax<button class="info-btn" type="button" data-term="prior-tax">?</button></label>
@@ -720,7 +720,7 @@
 
       <details class="term" id="term-total-projected-tax">
         <summary>Total projected tax</summary>
-        <p>This is your estimated federal tax bill for the whole year, combining self-employment tax, federal income tax on your combined income (your W-2 wages plus your business profit), and any Additional Medicare Tax. It's not an extra amount stacked on top of what's already been withheld from your paycheck, it's your entire year's total. If you have a W-2 job, some or all of it may already be getting paid automatically through your employer's withholding. The "Suggested next payment" figure in "Payments &amp; safe harbor" accounts for that withholding (and any estimated payments you've logged) and tells you what, if anything, you still need to set aside yourself.</p>
+        <p>This is your estimated federal tax bill for the whole year, combining self-employment tax, federal income tax on your combined income (your W-2 wages plus your business profit), and any Additional Medicare tax. It's not an extra amount stacked on top of what's already been withheld from your paycheck — it's your entire year's total. If you have a W-2 job, some or all of it may already be getting paid automatically through your employer's withholding. The "Suggested next payment" figure in "Payments &amp; safe harbor" accounts for that withholding (and any estimated payments you've logged) and tells you what, if anything, you still need to set aside yourself.</p>
       </details>
 
       <details class="term" id="term-se-tax">
@@ -730,7 +730,7 @@
 
       <details class="term" id="term-qbi">
         <summary>QBI deduction (Qualified Business Income)</summary>
-        <p>This is one of the best parts of being self-employed, and a lot of people don't realize it exists. It lets you deduct 20% of your net business profit before your federal income tax is calculated — meaning roughly a fifth of what you earned from your work isn't taxed at all. You don't need to do anything special to claim it; this tool applies it automatically. It does start to shrink at higher income — for 2026, it tapers off between $201,775–$276,775 of taxable income (single or head of household) or $403,550–$553,550 (married filing jointly), and this tool follows that same taper.</p>
+        <p>This is one of the best parts of being self-employed, and a lot of people don't realize it exists. It lets you deduct 20% of your net business profit before your federal income tax is calculated — meaning roughly a fifth of what you earned from your work isn't taxed at all. You don't need to do anything special to claim it; this tool applies it automatically. It does start to shrink at higher income — for 2026, it tapers off between $201,750–$276,750 of taxable income (single or head of household) or $403,500–$553,500 (married filing jointly), and this tool follows that same taper.</p>
       </details>
 
       <details class="term" id="term-fed-tax">
@@ -785,12 +785,12 @@
 
       <details class="term" id="term-w2-wages-spouse">
         <summary>Spouse's W-2 wages</summary>
-        <p>This one only shows up for joint filers, and it plays a different role than your own W-2 wages. Your spouse's earnings don't affect your Social Security cap — that's tracked per person — but they do count toward your household's combined income for federal tax brackets and the Additional Medicare Tax. Keeping the two separate is what lets this tool get both calculations right at once.</p>
+        <p>This one only shows up for joint filers, and it plays a different role than your own W-2 wages. Your spouse's earnings don't affect your Social Security cap — that's tracked per person — but they do count toward your household's combined income for federal tax brackets and the Additional Medicare tax. Keeping the two separate is what lets this tool get both calculations right at once.</p>
       </details>
 
       <details class="term" id="term-w2-withholding">
         <summary>Federal tax withheld</summary>
-        <p>A W-2 paycheck usually has several different things withheld at once, federal income tax, Social Security, Medicare, and often state tax too. This field wants <strong>only the federal income tax portion</strong>. Leave out Social Security, Medicare, and any state withholding (this tool doesn't model state tax at all, so including it would make your "already covered" amount look bigger than it really is for IRS purposes). On a pay stub, look for a line labeled something like "Federal Income Tax" or "Fed W/H" and use that year-to-date total; on a full year-end W-2, it's Box 2. The IRS treats this withholding as if it were paid evenly across the whole year, no matter when it was actually withheld, and this tool counts it toward what you owe alongside any estimated payments you've logged, so it doesn't ask you to pay twice on income your employer is already covering.</p>
+        <p>A W-2 paycheck usually has several different things withheld at once: federal income tax, Social Security, Medicare, and often state tax too. This field wants <strong>only the federal income tax portion</strong>. Leave out Social Security, Medicare, and any state withholding (this tool doesn't model state tax at all, so including it would make your "already covered" amount look bigger than it really is for IRS purposes). On a pay stub, look for a line labeled something like "Federal Income Tax" or "Fed W/H" and use that year-to-date total; on a full year-end W-2, it's Box 2. The IRS treats this withholding as if it were paid evenly across the whole year, no matter when it was actually withheld. This tool counts it toward what you owe alongside any estimated payments you've logged, so it doesn't ask you to pay twice on income your employer is already covering.</p>
       </details>
 
       <details class="term" id="term-already-covered">
@@ -814,7 +814,7 @@
         <p><strong>1. What this is.</strong> Ledger is a free tool that estimates federal self-employment tax obligations based on information you enter — income, expenses, mileage, and payments. It's a planning aid, not a filing service, and it never submits anything to the IRS or anyone else on your behalf.</p>
         <p><strong>2. Not tax, legal, or financial advice.</strong> Nothing in this app is tax, legal, accounting, or financial advice. Its estimates rely on simplified assumptions about federal tax law and may not reflect your complete situation, applicable state or local taxes, or recent changes in tax law. Always verify any figure with a qualified CPA or tax professional before filing a return or sending a payment.</p>
         <p><strong>3. No professional relationship.</strong> Using this app does not create an accountant-client, attorney-client, advisor-client, or any other professional relationship between you and Ledger's creator(s).</p>
-        <p><strong>4. Accuracy of estimates.</strong> Estimates depend entirely on what you enter. This tool models federal taxes only — not state or local taxes, itemized deductions, retirement or health-insurance deductions, or filing statuses beyond Single, Married Filing Jointly, and Head of Household. We work to keep the underlying figures current and sourced from official IRS and Social Security Administration publications, but tax law changes, and we can't guarantee the app reflects the latest developments at all times.</p>
+        <p><strong>4. Accuracy of estimates.</strong> Estimates depend entirely on what you enter. This tool models federal taxes only — not state or local taxes, itemized deductions, retirement or health-insurance deductions, or filing statuses beyond Single, Married filing jointly, and Head of household. We work to keep the underlying figures current and sourced from official IRS and Social Security Administration publications, but tax law changes, and we can't guarantee the app reflects the latest developments at all times.</p>
         <p><strong>5. Your responsibilities.</strong> You're responsible for the accuracy of what you enter, for independently verifying any estimate before relying on it, and for your own filings and payments. Don't rely solely on this tool for decisions with real financial consequences.</p>
         <p><strong>6. Data and privacy.</strong> This app has no accounts and never transmits what you enter to any server — everything is stored only in your own browser, on your own device. We don't collect, see, sell, or have access to your data. If you clear your browser's site data, uninstall the app, or switch devices without exporting first, your entries may be lost — use Export CSV periodically if you want a backup.</p>
         <p><strong>7. No warranty.</strong> This app is provided "as is" and "as available," without warranties of any kind — including accuracy, merchantability, fitness for a particular purpose, or that the app will be error-free or uninterrupted.</p>
@@ -883,7 +883,7 @@
     <div class="welcome-card">
       <h2>Welcome to Ledger</h2>
       <p><strong>Ledger helps freelancers &amp; self-employed people stay ahead of taxes with a simple, running estimate of what they'll owe.</strong></p>
-      <p>Log income, expenses, mileage, and IRS payments. All in one place!</p>
+      <p>Log income, expenses, mileage, and payments. All in one place.</p>
       <p><strong>It's free, private, and fully local.</strong></p>
       <p>Everything you enter stays on your device. We don't see it, store it, or send it anywhere.</p>
       <p><strong>We're just getting started.</strong></p>
@@ -900,7 +900,7 @@
   <div class="welcome-overlay" id="feedback-noemail-overlay" style="display:none;">
     <div class="welcome-card" style="text-align:center;">
       <h2>Just checking…</h2>
-      <p style="text-align:left;">We noticed you didn't leave us your email. We read every submission, we just want to make sure we can respond to yours. Click "Send anyway" below if you're okay with not hearing back directly.</p>
+      <p style="text-align:left;">We noticed you didn't leave us your email. We read every submission — we just want to make sure we can respond to yours. Click "Send anyway" below if you're okay with not hearing back directly.</p>
       <button class="install-btn" type="button" id="feedback-send-anyway-btn" style="width:100%; margin-bottom:14px;">Send anyway</button>
       <button class="confirm-card-goback" type="button" id="feedback-go-back-btn">Go back</button>
     </div>
@@ -934,14 +934,14 @@
       brackets: {
         single: [[0,12400,0.10],[12400,50400,0.12],[50400,105700,0.22],[105700,201775,0.24],[201775,256225,0.32],[256225,640600,0.35],[640600,Infinity,0.37]],
         mfj: [[0,24800,0.10],[24800,100800,0.12],[100800,211400,0.22],[211400,403550,0.24],[403550,512450,0.32],[512450,768700,0.35],[768700,Infinity,0.37]],
-        hoh: [[0,17700,0.10],[17700,67450,0.12],[67450,105700,0.22],[105700,201775,0.24],[201775,256200,0.32],[256200,640600,0.35],[640600,Infinity,0.37]]
+        hoh: [[0,17700,0.10],[17700,67450,0.12],[67450,105700,0.22],[105700,201750,0.24],[201750,256200,0.32],[256200,640600,0.35],[640600,Infinity,0.37]]
       },
       ssWageBase: 184500,
       addlMedicareThreshold: { single: 200000, mfj: 250000, hoh: 200000 },
       qbiPhaseOut: {
-        single: { start: 201775, range: 75000 },
-        hoh: { start: 201775, range: 75000 },
-        mfj: { start: 403550, range: 150000 }
+        single: { start: 201750, range: 75000 },
+        hoh: { start: 201750, range: 75000 },
+        mfj: { start: 403500, range: 150000 }
       },
       updated: 'Jan 2026'
     }
@@ -2862,8 +2862,8 @@
     var qbiPhase = params.qbiPhaseOut[state.filingStatus];
     methodologyBody.innerHTML =
       '<ul>' +
-      '<li><strong>Self-employment tax:</strong> 92.35% of net business income (income minus deductible expenses), taxed at 12.4% Social Security up to the ' + state.selectedYear + ' wage base of ' + fmt(params.ssWageBase) + ' (reduced only by your own W-2 wages, never a spouse\'s) plus 2.9% Medicare with no cap.</li>' +
-      '<li><strong>QBI deduction:</strong> 20% of net business income (after the deductible half of SE tax), capped at 20% of taxable income before the deduction. Full deduction below ' + fmt(qbiPhase.start) + ' of taxable income, then a straight-line taper to $0 across the next ' + fmt(qbiPhase.range) + ' — matching the real phase-out for service-type businesses, and a reasonable stand-in for other businesses too since it assumes no W-2 payroll or significant property of your own, which is true for most solo freelancers.</li>' +
+      '<li><strong>Self-employment tax:</strong> 92.35% of net business income (income minus deductible expenses) is subject to a 12.4% Social Security tax, up to the ' + state.selectedYear + ' wage base of ' + fmt(params.ssWageBase) + ' (reduced only by your own W-2 wages, never a spouse\'s), plus a 2.9% Medicare tax with no cap.</li>' +
+      '<li><strong>QBI deduction:</strong> 20% of net business income (after the deductible half of SE tax), capped at 20% of taxable income before the deduction. Full deduction below ' + fmt(qbiPhase.start) + ' of taxable income, then a straight-line taper to $0 across the next ' + fmt(qbiPhase.range) + '. This matches the real phase-out rule for service-based businesses (consulting, coaching, and similar), and works as a reasonable stand-in for other business types too, since it assumes no W-2 payroll or significant business property of your own — true for most solo freelancers either way.</li>' +
       '<li><strong>Additional Medicare tax:</strong> 0.9% on combined household wages + SE earnings above ' + fmt(addl) + ' for your filing status.</li>' +
       '<li><strong>Federal income tax:</strong> ' + state.selectedYear + ' brackets, standard deduction of ' + fmt(std) + ' for your filing status, on your combined household income (your W-2 wages + your spouse\'s, if joint + net business profit).</li>' +
       '<li><strong>Meals:</strong> only 50% of a meal expense counts as deductible.</li>' +
@@ -2888,7 +2888,7 @@
 
   function progressMessage(pct) {
     if (pct <= 0) return 'Nothing set aside yet — there\'s still time before your next due date.';
-    if (pct < 25) return 'A start has been made — every bit logged now is less to find later.';
+    if (pct < 25) return 'You\'ve made a start — every bit logged now is less to find later.';
     if (pct < 50) return 'A solid start — you\'re building a real cushion.';
     if (pct < 75) return 'More than halfway there.';
     if (pct < 100) return 'Close to fully covered — just a little further.';
@@ -3016,7 +3016,7 @@
       '<div class="stat-grid cols-3">' +
       '<div class="stat"><div class="stat-label">Effective tax rate<button class="info-btn" type="button" data-term="effective-rate">?</button></div><div class="stat-value">' + effRate.toFixed(1) + '%</div></div>' +
       '<div class="stat"><div class="stat-label">Miles logged</div><div class="stat-value">' + Math.round(miles).toLocaleString() + '</div></div>' +
-      '<div class="stat"><div class="stat-label">Next payment</div><div class="stat-value">' + daysLabel + '</div></div>' +
+      '<div class="stat"><div class="stat-label">Days to next payment</div><div class="stat-value">' + daysLabel + '</div></div>' +
       '</div>';
     el.querySelectorAll('.info-btn').forEach(wireInfoButton);
   }
@@ -3098,9 +3098,9 @@
     } else if (state.entryType === 'mileage' && !mileageRateFor(d).exact) {
       msg = 'No confirmed mileage rate for this date yet — using the closest known rate as an estimate.';
     } else if (state.entryType === 'mileage' && raw > 1000) {
-      msg = 'That\'s a lot of miles for one entry — double check it.';
+      msg = 'That\'s a lot of miles for one entry — double-check it.';
     } else if (state.entryType !== 'mileage' && raw > 1000000) {
-      msg = 'That\'s a very large amount — double check it.';
+      msg = 'That\'s a very large amount — double-check it.';
     }
     entryWarningEl.style.display = msg ? 'block' : 'none';
     entryWarningEl.textContent = msg;
@@ -3198,7 +3198,7 @@
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch (err) {
-      statusLine.textContent = 'Could not save — your entries may not persist.';
+      statusLine.textContent = 'Could not save — check your browser\'s storage settings, or try a different browser.';
     }
   }
 
@@ -3244,7 +3244,7 @@
     if (anyApproxMileage) {
       rows.push(['Note', 'One or more mileage entries used an estimated rate — no confirmed IRS rate was available for that date.']);
     }
-    rows.push(['Total income', t.income.toFixed(2)]);
+    rows.push(['Total earnings', t.income.toFixed(2)]);
     rows.push(['Deductible expenses', t.expenses.toFixed(2)]);
     rows.push(['QBI deduction', t.qbiDeduction.toFixed(2)]);
     rows.push(['Self-employment tax', t.seTax.toFixed(2)]);
@@ -3432,7 +3432,7 @@
   var GLOSSARY_SUMMARIES = {
     'total-projected-tax': { title: 'Total projected tax', summary: 'Your full year\'s federal tax bill, before subtracting withholding or payments already made — see "Suggested next payment" for what\'s actually left.' },
     'se-tax': { title: 'Self-employment tax', summary: 'Covers both the employee and employer share of Social Security and Medicare, since there\'s no employer here to split it with you.' },
-    'qbi': { title: 'QBI deduction', summary: 'Deduct 20% of your net business profit before federal tax — automatic below about $201,775 (single) / $403,550 (joint), then it tapers off.' },
+    'qbi': { title: 'QBI deduction', summary: 'Deduct 20% of your net business profit before federal tax — automatic below about $201,750 (single) / $403,500 (joint), then it tapers off.' },
     'fed-tax': { title: 'Federal income tax', summary: 'Tax on your income after deductions, using brackets — only your top slice of income is taxed at your highest rate.' },
     'addl-medicare': { title: 'Additional Medicare tax', summary: 'An extra 0.9% once your income passes $200,000 (single/HOH) or $250,000 (joint).' },
     'safe-harbor': { title: 'Safe harbor', summary: 'The minimum you need to pay throughout the year to avoid an underpayment penalty.' },
@@ -3701,7 +3701,7 @@
       pageTitleEl.textContent = 'Tax terms, explained';
       pageSubEl.textContent = 'Plain-English definitions for the jargon used throughout this tool.';
     } else if (view === 'feedback') {
-      pageTitleEl.textContent = 'Contact Us';
+      pageTitleEl.textContent = 'Contact us';
       pageSubEl.textContent = 'Send feedback, ask a question, or reach out for anything else.';
     } else {
       pageTitleEl.textContent = 'Ledger';
