@@ -549,6 +549,7 @@
           <button id="btn-payment" class="payment" type="button">Payment</button>
         </div>
       </div>
+      <p class="helper-note" id="mileage-scope-note" style="display:none; margin: 0 0 10px;">Only log miles driven for your freelance work — not your regular commute or personal trips.<button class="info-btn" type="button" data-term="mileage-scope">?</button></p>
       <div class="entry-form">
         <div class="field">
           <label for="entry-date">Date</label>
@@ -780,6 +781,11 @@
       <details class="term" id="term-mileage-rate">
         <summary>Standard mileage rate</summary>
         <p>Instead of tracking the exact cost of gas, maintenance, and wear on your vehicle, the IRS lets you use one simple rate per business mile driven. Multiply your miles by that rate, and that's your deduction. The rate can change mid-year — it did in 2026 — so this tool automatically applies whichever rate matches the date you drove.</p>
+      </details>
+
+      <details class="term" id="term-mileage-scope">
+        <summary>Business vs. personal mileage</summary>
+        <p>The mileage deduction only covers driving done for your freelance work — a trip to a client's site, a supply run, driving between job locations. It doesn't cover your everyday commute to a regular workplace, and it never covers personal errands, even ones on the same trip as work driving. A simple test: if you wouldn't have made the trip without your freelance work, it counts; if you would have made it anyway, it doesn't.</p>
       </details>
 
       <details class="term" id="term-w2-wages">
@@ -2447,6 +2453,7 @@
   var mealRow = document.getElementById('meal-row');
   var mealCheckbox = document.getElementById('entry-meal');
   var mileageRow = document.getElementById('mileage-row');
+  var mileageScopeNote = document.getElementById('mileage-scope-note');
   var categoryFieldEl = document.getElementById('category-field');
   var categoryEl = document.getElementById('entry-category');
   var entryWarningEl = document.getElementById('entry-warning');
@@ -3056,6 +3063,7 @@
     mealRow.style.display = state.entryType === 'expense' ? 'flex' : 'none';
     categoryFieldEl.style.display = state.entryType === 'expense' ? 'block' : 'none';
     mileageRow.style.display = state.entryType === 'mileage' ? 'block' : 'none';
+    mileageScopeNote.style.display = state.entryType === 'mileage' ? 'block' : 'none';
     if (state.entryType === 'mileage') {
       amountLabelEl.textContent = 'Miles';
       amountEl.type = 'number';
@@ -3444,6 +3452,7 @@
     'prior-agi': { title: 'Prior year AGI', summary: 'Last year\'s adjusted gross income — only used to check whether the higher 110% safe harbor threshold applies.' },
     'quarterly': { title: 'Quarterly estimated payments', summary: 'Four smaller payments spread across the year instead of one lump sum in April.' },
     'mileage-rate': { title: 'Standard mileage rate', summary: 'A flat per-mile rate the IRS lets you deduct instead of tracking actual vehicle costs.' },
+    'mileage-scope': { title: 'Business vs. personal mileage', summary: 'Only miles driven for your freelance work count — not your commute or personal errands.' },
     'w2-wages': { title: 'W-2 wages', summary: 'Your gross W-2 pay this year, before any taxes are withheld — used to figure out how much room is left under your Social Security cap.' },
     'w2-wages-spouse': { title: 'Spouse\'s W-2 wages', summary: 'Counted in your household income for tax brackets, but never affects your own Social Security cap.' },
     'w2-withholding': { title: 'Federal tax withheld', summary: 'Only the federal income tax withheld from your paychecks — not Social Security, Medicare, or state tax.' },
