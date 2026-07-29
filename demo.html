@@ -8,12 +8,16 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="Ledger Demo" />
 <meta name="theme-color" content="#1C2B33" />
+<meta name="description" content="See Ledger in action with sample data — a free federal tax estimator for freelancers and self-employed people. Log income, expenses, mileage, and estimated payments to see a running estimate of self-employment tax, the QBI deduction, and your quarterly safe-harbor payment target." />
 <title>Ledger — freelance tax tracker</title>
 <link rel="manifest" href="demo-manifest.json" />
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
 <link rel="icon" href="icons/icon-192.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<!-- Anonymous, cookie-free visit counting (GoatCounter) — no personal data, nothing typed into
+     the app is ever sent. Replace YOUR_CODE with your real GoatCounter site code once set up. -->
+<script data-goatcounter="https://YOUR_CODE.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 <style>
   :root {
     --paper: #FAF7F0;
@@ -816,7 +820,7 @@
         <p><strong>3. No professional relationship.</strong> Using this app does not create an accountant-client, attorney-client, advisor-client, or any other professional relationship between you and Ledger's creator(s).</p>
         <p><strong>4. Accuracy of estimates.</strong> Estimates depend entirely on what you enter. This tool models federal taxes only — not state or local taxes, itemized deductions, retirement or health-insurance deductions, or filing statuses beyond Single, Married filing jointly, and Head of household. We work to keep the underlying figures current and sourced from official IRS and Social Security Administration publications, but tax law changes, and we can't guarantee the app reflects the latest developments at all times.</p>
         <p><strong>5. Your responsibilities.</strong> You're responsible for the accuracy of what you enter, for independently verifying any estimate before relying on it, and for your own filings and payments. Don't rely solely on this tool for decisions with real financial consequences.</p>
-        <p><strong>6. Data and privacy.</strong> This app has no accounts and never transmits what you enter to any server — everything is stored only in your own browser, on your own device. We don't collect, see, sell, or have access to your data. If you clear your browser's site data, uninstall the app, or switch devices without exporting first, your entries may be lost — use Export CSV periodically if you want a backup.</p>
+        <p><strong>6. Data and privacy.</strong> This app has no accounts and never transmits what you enter to any server — everything is stored only in your own browser, on your own device. We don't collect, see, sell, or have access to your data. Separately, we use a privacy-focused analytics service (GoatCounter) to count anonymous page visits — it doesn't use cookies, doesn't identify or track individual visitors, and never sees anything you type into the app. It only tells us how many people visited, nothing more. If you clear your browser's site data, uninstall the app, or switch devices without exporting first, your entries may be lost — use Export CSV periodically if you want a backup.</p>
         <p><strong>7. No warranty.</strong> This app is provided "as is" and "as available," without warranties of any kind — including accuracy, merchantability, fitness for a particular purpose, or that the app will be error-free or uninterrupted.</p>
         <p><strong>8. Limitation of liability.</strong> To the fullest extent the law allows, Ledger's creator(s) aren't liable for damages — including underpayment penalties, interest, lost income, or other direct, indirect, incidental, or consequential damages — arising from your use of, or reliance on, this app.</p>
         <p><strong>9. Intellectual property.</strong> The design, code, and content of this app belong to its creator(s) and are protected by applicable copyright law. Don't copy, redistribute, or create derivative works from it without permission.</p>
@@ -830,7 +834,7 @@
   <div id="view-feedback" style="display:none;">
     <div class="card" id="feedback-card">
       <h2>Your input matters</h2>
-      <p class="helper-note" style="margin-top:0;">This is the only information you enter anywhere in this app that ever leaves your device. Everything else always stays local, no exceptions.</p>
+      <p class="helper-note" style="margin-top:0;">This is the only information you enter anywhere in this app that ever leaves your device.</p>
       <form id="feedback-form" action="https://formspree.io/f/mlgqwayy" method="POST">
         <div class="field" style="margin-bottom: 10px;">
           <label for="feedback-category" style="text-transform:none; letter-spacing:normal; font-size:13px;">What's this about?</label>
@@ -884,7 +888,7 @@
       <h2>Welcome to Ledger</h2>
       <p><strong>Ledger helps freelancers &amp; self-employed people stay ahead of taxes with a simple, running estimate of what they'll owe.</strong></p>
       <p>Log income, expenses, mileage, and payments. All in one place.</p>
-      <p><strong>It's free, private, and fully local.</strong></p>
+      <p><strong>It's free and private.</strong></p>
       <p>Everything you enter stays on your device. We don't see it, store it, or send it anywhere.</p>
       <p><strong>We're just getting started.</strong></p>
       <p>New features are coming fast, and your feedback shapes what we build next. Reach out anytime from the Contact tab.</p>
